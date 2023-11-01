@@ -1,0 +1,31 @@
+$cell-size: 50px;
+$grid-width: 10;
+$grid-height: 18;
+$border: 1px solid green;
+
+.grid.big {
+  width: $cell-size*$grid-width+$grid-width+1px;
+  height: $cell-size*$grid-height+$grid-height+1px;
+  margin: auto;
+}
+
+.cell {
+  display: inline-flex;
+  float: left;
+}
+
+.grid.big .row .cell {
+  width: $cell-size;
+  height: $cell-size;
+  border-left: $border;
+  border-top: $border;
+}
+
+.grid.big .row .cell:last-child {
+  border-right: $border;
+}
+
+.grid.big .row:last-child .cell {
+  border-bottom: $border;
+}
+

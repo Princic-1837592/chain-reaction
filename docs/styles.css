@@ -1,0 +1,12 @@
+body {
+    background-color: black;
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    display: inline-flex;
+    float: left;
+}
