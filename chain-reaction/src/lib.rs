@@ -90,43 +90,44 @@ impl Game {
             return false;
         }
         cell.player = self.turn;
-        self.players[self.turn].atoms += 1;
+        cell.atoms += 1;
         self.atoms += 1;
-        if cell.is_unstable() {
+        self.players[self.turn].atoms += 1;
+        if cell.must_explode() {
             self.explode(coord);
-        } else {
-            cell.atoms += 1;
         }
         self.next_turn();
         true
     }
 
-    fn explode(&mut self, coord: Coord) {
+    fn explode(&mut self, coord @ (row, col): Coord) {
+        if !self.board[row][col].must_explode() {
+            return;
+        }
         let mut queue = VecDeque::from([coord]);
         while let Some((row, col)) = queue.pop_front() {
             let cell = &mut self.board[row][col];
-            if cell.atoms != 0 && cell.player != self.turn {
-                self.players[cell.player].atoms -= cell.atoms;
-                self.players[self.turn].atoms += cell.atoms;
+            cell.atoms -= cell.max_atoms;
+            if cell.atoms == 0 {
+                cell.player = usize::MAX;
             }
-            cell.player = self.turn;
-            cell.atoms += 1;
-            if cell.must_explode() {
-                cell.atoms -= cell.max_atoms;
-                if cell.atoms == 0 {
-                    cell.player = usize::MAX;
-                }
-                if row > 0 {
-                    queue.push_back((row - 1, col));
-                }
-                if row < self.board.len() - 1 {
-                    queue.push_back((row + 1, col));
-                }
-                if col > 0 {
-                    queue.push_back((row, col - 1));
-                }
-                if col < self.board[0].len() - 1 {
-                    queue.push_back((row, col + 1));
+            for next @ (next_row, next_col) in [
+                (row.wrapping_sub(1), col),
+                (row + 1, col),
+                (row, col.wrapping_sub(1)),
+                (row, col + 1),
+            ] {
+                if next_row < self.board.len() && next_col < self.board[0].len() {
+                    let next_cell = &mut self.board[next_row][next_col];
+                    if next_cell.atoms != 0 && next_cell.player != self.turn {
+                        self.players[next_cell.player].atoms -= next_cell.atoms;
+                        self.players[self.turn].atoms += next_cell.atoms;
+                    }
+                    next_cell.player = self.turn;
+                    next_cell.atoms += 1;
+                    if next_cell.must_explode() {
+                        queue.push_back(next);
+                    }
                 }
             }
         }
@@ -134,10 +135,6 @@ impl Game {
 }
 
 impl Cell {
-    const fn is_unstable(&self) -> bool {
-        self.atoms + 1 == self.max_atoms
-    }
-
     const fn must_explode(&self) -> bool {
         self.atoms >= self.max_atoms
     }
