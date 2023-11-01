@@ -1,13 +1,13 @@
 use std::collections::VecDeque;
 
-#[cfg(feature = "serde")]
+#[cfg(target_family = "wasm")]
 use serde::Serialize;
 
 #[cfg(test)]
 mod tests;
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(target_family = "wasm", derive(Serialize))]
 pub struct Game {
     board: Vec<Vec<Cell>>,
     players: Vec<Player>,
@@ -17,7 +17,7 @@ pub struct Game {
 }
 
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(target_family = "wasm", derive(Serialize))]
 #[cfg_attr(test, derive(PartialEq, Eq))]
 struct Cell {
     atoms: usize,
@@ -26,7 +26,7 @@ struct Cell {
 }
 
 #[derive(Copy, Clone, Debug, Default)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(target_family = "wasm", derive(Serialize))]
 struct Player {
     atoms: usize,
 }
