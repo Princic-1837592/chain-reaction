@@ -2,18 +2,16 @@ use crate::{Cell, Game};
 
 #[test]
 fn max_atoms() {
-    let game = Game::new(2, 2, 4);
-    assert_eq!(game.max_atoms, 4);
-    let game = Game::new(3, 3, 4);
+    let game = Game::new(3, 3, 4).unwrap();
     assert_eq!(game.max_atoms, 4 + 8 + 3);
-    let game = Game::new(4, 4, 4);
+    let game = Game::new(4, 4, 4).unwrap();
     assert_eq!(game.max_atoms, 4 + 16 + 12);
 }
 
 #[test]
 fn max_atoms_cell() {
     fn test(height: usize, width: usize) {
-        let game = Game::new(height, width, 4);
+        let game = Game::new(height, width, 4).unwrap();
         // prima controlla manualmente gli angoli
         assert_eq!(game.board[0][0].max_atoms, 2);
         assert_eq!(game.board[0][width - 1].max_atoms, 2);
@@ -43,7 +41,7 @@ fn max_atoms_cell() {
 
 #[test]
 fn next_turn() {
-    let mut game = Game::new(5, 5, 4);
+    let mut game = Game::new(5, 5, 4).unwrap();
     // scorre tutti i giocatori, piazzando manualmente un atomo per ogni giocatore
     // e fa andare avanti il turno
     // l'atomo non viene piazzato davvero ma solo aumentato il contatore globale
@@ -66,7 +64,7 @@ fn next_turn() {
 
 #[test]
 fn add_atom() {
-    let mut game = Game::new(5, 5, 2);
+    let mut game = Game::new(5, 5, 2).unwrap();
     game.add_atom((0, 0));
     /*
     1 0 0 0 0
@@ -392,7 +390,7 @@ fn add_atom() {
 
 #[test]
 fn elimination() {
-    let mut game = Game::new(2, 2, 2);
+    let mut game = Game::new(3, 3, 2).unwrap();
     assert_eq!(game.turn, 0);
     game.add_atom((0, 0));
     assert_eq!(game.turn, 1);
@@ -400,17 +398,4 @@ fn elimination() {
     assert_eq!(game.turn, 0);
     game.add_atom((0, 0));
     assert_eq!(game.turn, 0);
-}
-
-#[test]
-fn no_more_space() {
-    let mut game = Game::new(2, 2, 2);
-    assert!(game.add_atom((0, 0)));
-    assert!(game.add_atom((0, 1)));
-    assert!(game.add_atom((1, 0)));
-    assert!(game.add_atom((1, 1)));
-    assert!(!game.add_atom((0, 0)));
-    assert!(!game.add_atom((0, 1)));
-    assert!(!game.add_atom((1, 0)));
-    assert!(!game.add_atom((1, 1)));
 }
