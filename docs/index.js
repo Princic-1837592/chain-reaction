@@ -11,9 +11,9 @@ function initializePage() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || FORCE_MOBILE) {
         device = "mobile";
     }
-    document.getElementById("grid-container").classList.add(device);
+    document.getElementById("game-container").classList.add(device);
     //todo togliere
-    initializeGrid("big");
+    initializeGrid("small");
     render();
 }
 

@@ -1,29 +1,29 @@
-$cell-size: 12vw;
-$grid-width: 6;
-$grid-height: 11;
+$cell-size: 8vw;
+$grid-width: 10;
+$grid-height: 18;
 $border-width: 1px;
 $border: $border-width solid white;
 
-.mobile.grid-container {
+.mobile.game-container {
   margin-top: $cell-size;
   margin-bottom: $cell-size;
 }
 
-.mobile .grid.small .row {
+.mobile .grid.big .row {
   grid-template-columns: repeat($grid-width, $cell-size);
 }
 
-.mobile .grid.small .row .cell {
+.mobile .grid.big .row .cell {
   width: $cell-size;
   height: $cell-size;
   border-left: $border;
   border-top: $border;
 }
 
-.mobile .grid.small .row .cell:last-child {
+.mobile .grid.big .row .cell:last-child {
   border-right: $border;
 }
 
-.mobile .grid.small .row:last-child .cell {
+.mobile .grid.big .row:last-child .cell {
   border-bottom: $border;
 }

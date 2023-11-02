@@ -1,0 +1,33 @@
+$cell-size: 11vw;
+$grid-width: 6;
+$grid-height: 11;
+$border-width: 1px;
+$border: $border-width solid white;
+
+.mobile.game-container {
+  width: max-content;
+  margin: $cell-size/2 auto;
+}
+
+.grid{
+  margin-top: $cell-size/2;
+}
+
+.mobile .grid.small .row {
+  grid-template-columns: repeat($grid-width, $cell-size);
+}
+
+.mobile .grid.small .row .cell {
+  width: $cell-size;
+  height: $cell-size;
+  border-left: $border;
+  border-top: $border;
+}
+
+.mobile .grid.small .row .cell:last-child {
+  border-right: $border;
+}
+
+.mobile .grid.small .row:last-child .cell {
+  border-bottom: $border;
+}

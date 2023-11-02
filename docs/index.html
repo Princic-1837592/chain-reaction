@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Chain Reaction</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="desktop/big.css">
-    <link rel="stylesheet" href="desktop/selection.css">
-    <link rel="stylesheet" href="desktop/small.css">
-    <link rel="stylesheet" href="desktop/styles.css">
-    <link rel="stylesheet" href="mobile/big.css">
-    <link rel="stylesheet" href="mobile/selection.css">
-    <link rel="stylesheet" href="mobile/small.css">
-    <link rel="stylesheet" href="mobile/styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/desktop/big.css">
+    <link rel="stylesheet" href="styles/desktop/selection.css">
+    <link rel="stylesheet" href="styles/desktop/small.css">
+    <link rel="stylesheet" href="styles/desktop/styles.css">
+    <link rel="stylesheet" href="styles/mobile/big.css">
+    <link rel="stylesheet" href="styles/mobile/selection.css">
+    <link rel="stylesheet" href="styles/mobile/small.css">
+    <link rel="stylesheet" href="styles/mobile/styles.css">
 </head>
 <body>
-<div class="grid-container" id="grid-container">
-    <div class="grid" id="grid">
+<div class="game-container" id="game-container">
+    <div class="header">
+        <div id="mode-selector">
+            <label id="mode-selector-title">Grid size</label>
+            <div id="mode-selector-slider">
+                <label>
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div id="players-selector">
+            
+        </div>
     </div>
+    <div class="grid" id="grid"></div>
 </div>
 <script src="index.js" type="module"></script>
 </body>

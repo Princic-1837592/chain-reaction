@@ -1,15 +1,19 @@
-.mobile.grid-container {
-  margin-top: 12vw;
-  margin-bottom: 12vw;
+.mobile.game-container {
+  width: max-content;
+  margin: 5.5vw auto;
+}
+
+.grid {
+  margin-top: 5.5vw;
 }
 
 .mobile .grid.small .row {
-  grid-template-columns: repeat(6, 12vw);
+  grid-template-columns: repeat(6, 11vw);
 }
 
 .mobile .grid.small .row .cell {
-  width: 12vw;
-  height: 12vw;
+  width: 11vw;
+  height: 11vw;
   border-left: 1px solid white;
   border-top: 1px solid white;
 }
