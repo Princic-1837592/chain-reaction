@@ -1,0 +1,25 @@
+.mobile.grid-container {
+  margin-top: 8vw;
+  margin-bottom: 8vw;
+}
+
+.mobile .grid.big .row {
+  grid-template-columns: repeat(10, 8vw);
+}
+
+.mobile .grid.big .row .cell {
+  width: 8vw;
+  height: 8vw;
+  border-left: 1px solid white;
+  border-top: 1px solid white;
+}
+
+.mobile .grid.big .row .cell:last-child {
+  border-right: 1px solid white;
+}
+
+.mobile .grid.big .row:last-child .cell {
+  border-bottom: 1px solid white;
+}
+
+/*# sourceMappingURL=big.css.map */

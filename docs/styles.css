@@ -2,11 +2,16 @@ body {
     background-color: black;
 }
 
-.row {
-    display: flex;
+.grid {
+    width: max-content;
+    margin: auto;
 }
 
-.cell {
-    display: inline-flex;
-    float: left;
+.grid .row {
+    display: grid;
+    grid-gap: 0;
+}
+
+.grid .row .cell {
+    display: inline;
 }

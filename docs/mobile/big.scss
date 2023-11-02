@@ -1,24 +1,29 @@
-$cell-size: 40px;
+$cell-size: 8vw;
 $grid-width: 10;
 $grid-height: 18;
 $border-width: 1px;
 $border: $border-width solid white;
 
-.desktop .grid.big .row {
+.mobile.grid-container {
+  margin-top: $cell-size;
+  margin-bottom: $cell-size;
+}
+
+.mobile .grid.big .row {
   grid-template-columns: repeat($grid-width, $cell-size);
 }
 
-.desktop .grid.big .row .cell {
+.mobile .grid.big .row .cell {
   width: $cell-size;
   height: $cell-size;
   border-left: $border;
   border-top: $border;
 }
 
-.desktop .grid.big .row .cell:last-child {
+.mobile .grid.big .row .cell:last-child {
   border-right: $border;
 }
 
-.desktop .grid.big .row:last-child .cell {
+.mobile .grid.big .row:last-child .cell {
   border-bottom: $border;
 }

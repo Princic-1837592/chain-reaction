@@ -1,27 +1,20 @@
-.grid.small {
-  width: 607px;
-  height: 1112px;
-  margin: auto;
+.desktop .grid.small .row {
+  grid-template-columns: repeat(6, 70px);
 }
 
-.cell {
-  display: inline-flex;
-  float: left;
+.desktop .grid.small .row .cell {
+  width: 70px;
+  height: 70px;
+  border-left: 1px solid white;
+  border-top: 1px solid white;
 }
 
-.grid.small .row .cell {
-  width: 100px;
-  height: 100px;
-  border-left: 1px solid green;
-  border-top: 1px solid green;
+.desktop .grid.small .row .cell:last-child {
+  border-right: 1px solid white;
 }
 
-.grid.small .row .cell:last-child {
-  border-right: 1px solid green;
-}
-
-.grid.small .row:last-child .cell {
-  border-bottom: 1px solid green;
+.desktop .grid.small .row:last-child .cell {
+  border-bottom: 1px solid white;
 }
 
 /*# sourceMappingURL=small.css.map */
