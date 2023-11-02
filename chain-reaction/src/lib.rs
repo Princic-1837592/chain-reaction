@@ -35,7 +35,7 @@ type Coord = (usize, usize);
 
 impl Game {
     pub fn new(height: usize, width: usize, players: usize) -> Option<Self> {
-        if height < 3 || width < 3 || players < 2 {
+        if height < 3 || height > 18 || width < 3 || width > 10 || players < 2 || players > 8 {
             return None;
         }
         let mut board = vec![vec![Cell::default(); width]; height];

@@ -36,7 +36,6 @@ fn max_atoms_cell() {
     }
     test(5, 5);
     test(10, 10);
-    test(100, 50);
 }
 
 #[test]
