@@ -12,36 +12,40 @@ pub struct Game {
     board: Vec<Vec<Cell>>,
     players: Vec<Player>,
     turn: usize,
-    atoms: usize,
-    max_atoms: usize,
+    atoms: u32,
+    max_atoms: u32,
 }
 
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(target_family = "wasm", derive(Serialize))]
 #[cfg_attr(test, derive(PartialEq, Eq))]
 struct Cell {
-    atoms: usize,
+    atoms: u32,
     player: usize,
-    max_atoms: usize,
+    max_atoms: u32,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
 #[cfg_attr(target_family = "wasm", derive(Serialize))]
 struct Player {
-    atoms: usize,
+    atoms: u32,
 }
 
 type Coord = (usize, usize);
 
 impl Game {
-    pub fn new(height: usize, width: usize, players: usize) -> Self {
+    pub fn new(height: usize, width: usize, players: usize) -> Option<Self> {
+        if height < 3 || width < 3 || players < 2 {
+            return None;
+        }
         let mut board = vec![vec![Cell::default(); width]; height];
         for (r, row) in board.iter_mut().enumerate() {
             for (c, cell) in row.iter_mut().enumerate() {
                 cell.max_atoms = Self::max_atoms((r, c), height, width);
             }
         }
-        Self {
+        let (height, width) = (height as u32, width as u32);
+        Some(Self {
             board,
             players: vec![Player::default(); players],
             turn: 0,
@@ -49,10 +53,10 @@ impl Game {
             max_atoms: 4
                 + 2 * ((height - 2) * 2 + (width - 2) * 2)
                 + 3 * ((height - 2) * (width - 2)),
-        }
+        })
     }
 
-    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> usize {
+    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u32 {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
         if is_horizontal_edge && is_vertical_edge {
@@ -73,7 +77,7 @@ impl Game {
             // se ci sono meno atomi del numero di giocatori significa che nessuno può essere stato
             // eliminato quindi si può passare al turno successivo
             // se invece il giocatore successivo non è stato eliminato tocca a lui
-            if self.atoms <= self.players.len() || self.players[self.turn].atoms > 0 {
+            if self.atoms <= self.players.len() as u32 || self.players[self.turn].atoms > 0 {
                 break;
             }
         }
