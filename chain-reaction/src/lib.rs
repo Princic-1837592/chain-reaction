@@ -56,6 +56,14 @@ impl Game {
         })
     }
 
+    pub fn small() -> Self {
+        Self::new(11, 6, 2).unwrap()
+    }
+
+    pub fn large() -> Self {
+        Self::new(18, 10, 8).unwrap()
+    }
+
     const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u32 {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
@@ -141,6 +149,12 @@ impl Game {
 impl Cell {
     const fn must_explode(&self) -> bool {
         self.atoms >= self.max_atoms
+    }
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        Self::small()
     }
 }
 
