@@ -1,0 +1,88 @@
+#header * {
+    font-family: monospace;
+    font-size: 20px;
+    color: white;
+    background-color: black;
+}
+
+#header div {
+    margin-right: 20px;
+    vertical-align: top;
+}
+
+.header-content {
+    margin-top: 10px;
+}
+
+#mode-select-container {
+    width: max-content;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#mode-selector-slider {
+    width: 150px;
+    height: 70px;
+    position: relative;
+    margin-top: 10px;
+    border: white solid 1px;
+    box-sizing: content-box;
+}
+
+#mode-selector-slider label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#mode-selector-slider input {
+    display: none;
+}
+
+#mode-selector-slider .slider::before {
+    content: "";
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+#mode-selector-slider input:checked ~ .slider::before {
+    top: 10px;
+    left: 80px;
+    width: 50px;
+    height: 50px;
+}
+
+#players-select {
+    font-family: monospace;
+    font-size: 35px;
+    color: white;
+    background-color: black;
+    margin-top: 10px;
+    width: 100px;
+    height: 70px;
+    border: white solid 1px;
+    box-sizing: border-box;
+    text-align-last: center;
+}
+
+#players-select option {
+    font-family: monospace;
+    font-size: 20px;
+    text-align: center;
+}
+
+#start-button {
+    width: 100px;
+    height: 70px;
+    border: white solid 1px;
+    box-sizing: border-box;
+    color: inherit;
+    background-color: inherit;
+    font: inherit;
+}

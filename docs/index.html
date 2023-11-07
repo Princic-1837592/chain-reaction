@@ -3,31 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Chain Reaction</title>
-    <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    
     <link rel="stylesheet" href="styles/desktop/big.css">
-    <link rel="stylesheet" href="styles/desktop/selection.css">
+    <link rel="stylesheet" href="styles/desktop/header.css">
     <link rel="stylesheet" href="styles/desktop/small.css">
     <link rel="stylesheet" href="styles/desktop/styles.css">
-    <link rel="stylesheet" href="styles/mobile/big.css">
-    <link rel="stylesheet" href="styles/mobile/selection.css">
-    <link rel="stylesheet" href="styles/mobile/small.css">
+
+    <link rel="stylesheet" href="styles/mobile/header.css">
     <link rel="stylesheet" href="styles/mobile/styles.css">
+    
+    <link rel="stylesheet" href="styles/mobile/big/grid.css">
+    <link rel="stylesheet" href="styles/mobile/big/atoms.css">
+    
+    <link rel="stylesheet" href="styles/mobile/small/grid.css">
+    <link rel="stylesheet" href="styles/mobile/small/atoms.css">
 </head>
 <body>
 <div class="game-container" id="game-container">
-    <div class="header">
-        <div id="mode-selector">
-            <label id="mode-selector-title">Grid size</label>
-            <div id="mode-selector-slider">
+    <div id="header">
+        <div id="mode-select-container">
+            <div class="header-title">
+                <label class="header-title">Grid size</label>
+            </div>
+            <div id="mode-selector-slider" class="header-content">
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" id="grid-size">
                     <span class="slider"></span>
                 </label>
             </div>
         </div>
-        <div id="players-selector">
-            
+        <div id="players-select-container">
+            <div class="header-title">
+                <label>Players</label>
+            </div>
+            <div>
+                <label>
+                    <select id="players-select"></select>
+                </label>
+            </div>
+        </div>
+        <div id="start-button-container">
+            <div class="header-title">
+                <label class="header-title">New game</label>
+            </div>
+            <div class="header-content">
+                <button id="start-button">Start</button>
+            </div>
         </div>
     </div>
     <div class="grid" id="grid"></div>

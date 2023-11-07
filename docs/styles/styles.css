@@ -16,3 +16,11 @@ body {
 .grid .row .cell {
     display: inline;
 }
+
+#header {
+    color: white;
+}
+
+#header > div {
+    display: inline-block;
+}
