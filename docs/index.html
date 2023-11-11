@@ -3,57 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Chain Reaction</title>
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/styles.css">
-    
-    <link rel="stylesheet" href="styles/desktop/big.css">
-    <link rel="stylesheet" href="styles/desktop/header.css">
-    <link rel="stylesheet" href="styles/desktop/small.css">
-    <link rel="stylesheet" href="styles/desktop/styles.css">
+    <link rel="stylesheet" type="text/css" href="styles_new/styles.css">
+    <link rel="stylesheet" type="text/css" href="styles_new/menu.css">
 
-    <link rel="stylesheet" href="styles/mobile/header.css">
-    <link rel="stylesheet" href="styles/mobile/styles.css">
-    
-    <link rel="stylesheet" href="styles/mobile/big/grid.css">
-    <link rel="stylesheet" href="styles/mobile/big/atoms.css">
-    
-    <link rel="stylesheet" href="styles/mobile/small/grid.css">
-    <link rel="stylesheet" href="styles/mobile/small/atoms.css">
+    <link rel="stylesheet" type="text/css" href="styles_new/small/grid.css">
 </head>
 <body>
-<div class="game-container" id="game-container">
-    <div id="header">
-        <div id="mode-select-container">
-            <div class="header-title">
-                <label class="header-title">Grid size</label>
-            </div>
-            <div id="mode-selector-slider" class="header-content">
-                <label>
-                    <input type="checkbox" id="grid-size">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-        <div id="players-select-container">
-            <div class="header-title">
-                <label>Players</label>
-            </div>
-            <div>
-                <label>
-                    <select id="players-select"></select>
-                </label>
-            </div>
-        </div>
-        <div id="start-button-container">
-            <div class="header-title">
-                <label class="header-title">New game</label>
-            </div>
-            <div class="header-content">
-                <button id="start-button">Start</button>
-            </div>
+<div id="menu">
+    <div id="mode-select-container">
+        <label class="title">Grid size</label>
+        <div id="mode-selector-slider" class="header-content">
+            <label>Small</label>
+            <label>
+                <input type="checkbox" id="grid-size">
+                <span class="slider"></span>
+            </label>
+            <label>Large</label>
         </div>
     </div>
-    <div class="grid" id="grid"></div>
+    <div id="players-select-container">
+        <label class="title">Players</label>
+        <div>
+            <label><select id="players-select">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+            </label>
+        </div>
+    </div>
+    <div id="start-button-container">
+        <label class="title">New game</label>
+        <div class="header-content">
+            <button id="start-button">Start</button>
+        </div>
+    </div>
+</div>
+<div class="game-container" id="game-container">
+    <div class="grid invisible" id="grid"></div>
+    <div id="controls">
+        <div id="back-to-menu">
+        </div>
+        <div id="undo"></div>
+    </div>
 </div>
 <script src="index.js" type="module"></script>
 </body>

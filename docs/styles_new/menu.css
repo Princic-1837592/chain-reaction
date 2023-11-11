@@ -1,0 +1,26 @@
+#menu {
+    font-size: 40px;
+    width: 50%;
+    max-width: 500px;
+    margin: 100px auto;
+    border: 1px white solid;
+}
+
+#menu > div {
+    margin: 100px auto 0;
+    width: max-content;
+    align-content: center;
+    align-items: center;
+
+    &:last-child {
+        margin-bottom: 100px;
+    }
+}
+
+#menu .title {
+    display: block;
+    text-align: center;
+    margin-bottom: auto;
+    font-weight: bold;
+    font-size: 50px;
+}

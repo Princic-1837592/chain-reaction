@@ -1,8 +1,9 @@
 import init, {newGame} from "./pkg/frontend.js";
 
-init().then(initializePage);
+init().then(()=>{});
 
 const FORCE_MOBILE = true;
+// const FORCE_MOBILE = false;
 const SMALL_WIDTH = 6, SMALL_HEIGHT = 11;
 const BIG_WIDTH = 10, BIG_HEIGHT = 18;
 const COLORS = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "magenta"];
@@ -13,20 +14,9 @@ function initializePage() {
         device = "mobile";
     }
     document.getElementById("game-container").classList.add(device);
-    initializePlayersSelector();
     //todo togliere
     initializeGrid(false);
     render();
-}
-
-function initializePlayersSelector() {
-    const playersSelect = document.getElementById("players-select");
-    for (let i = 2; i <= 8; i++) {
-        const option = document.createElement("option");
-        option.value = `${i}`;
-        option.innerText = `${i}`;
-        playersSelect.appendChild(option);
-    }
 }
 
 function initializeGrid(large) {
@@ -64,6 +54,10 @@ function render() {
 function feNewGame() {
     const grid_size_large = document.getElementById("grid-size").checked;
     initializeGrid(grid_size_large);
+    const grid = document.getElementById("grid");
+    grid.classList.remove("invisible");
+    const menu = document.getElementById("menu");
+    menu.classList.add("invisible");
 }
 
 
