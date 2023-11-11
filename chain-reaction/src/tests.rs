@@ -66,7 +66,8 @@ fn next_turn() {
 #[test]
 fn add_atom() {
     let mut game = Game::new(5, 5, 2).unwrap();
-    game.add_atom((0, 0));
+
+    assert!(game.add_atom((0, 0)).unwrap().is_empty());
     /*
     1 0 0 0 0
     0 0 0 0 0
@@ -439,19 +440,23 @@ fn add_atom() {
     ] {
         assert!(game.add_atom(coord).unwrap().is_empty());
     }
-    /*
-    1 0 0 0 0 1
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    0 0 0 0 0 0
-    1 3 0 0 3 1
-    1 2 2 2 2 1
-    */
+    assert_eq!(
+        game.to_string(),
+        r"
+1 0 0 0 0 1
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+1 3 0 0 3 1
+1 2 2 2 2 1
+"
+        .trim()
+    );
     assert_eq!(
         game.add_atom((10, 5)).unwrap(),
         vec![
@@ -463,6 +468,23 @@ fn add_atom() {
             HashSet::from([(9, 1), (10, 0), (10, 4)]),
             HashSet::from([(9, 0)]),
         ]
+    );
+    assert_eq!(
+        game.to_string(),
+        r"
+1 0 0 0 0 1
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+1 1 0 0 1 1
+0 1 2 2 2 1
+1 2 1 2 0 1
+"
+        .trim()
     );
 }
 

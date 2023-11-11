@@ -180,3 +180,18 @@ impl Default for Cell {
         }
     }
 }
+
+impl Display for Game {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut result = String::new();
+        for row in &self.board {
+            for cell in row {
+                result.push_str(&format!("{} ", cell.atoms));
+            }
+            result.pop();
+            result.push('\n');
+        }
+        result.pop();
+        write!(f, "{}", result)
+    }
+}
