@@ -38,14 +38,14 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
 /**
-* @param {number} _row
-* @param {number} _column
+* @param {number} row
+* @param {number} column
 * @returns {string | undefined}
 */
-export function addAtom(_row, _column) {
+export function addAtom(row, column) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.addAtom(retptr, _row, _column);
+        wasm.addAtom(retptr, row, column);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         let v1;

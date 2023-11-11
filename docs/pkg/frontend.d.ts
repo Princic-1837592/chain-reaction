@@ -8,11 +8,11 @@
 */
 export function newGame(height: number, width: number, players: number): boolean;
 /**
-* @param {number} _row
-* @param {number} _column
+* @param {number} row
+* @param {number} column
 * @returns {string | undefined}
 */
-export function addAtom(_row: number, _column: number): string | undefined;
+export function addAtom(row: number, column: number): string | undefined;
 /**
 * @returns {string}
 */
