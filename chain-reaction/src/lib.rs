@@ -1,4 +1,7 @@
-use std::collections::VecDeque;
+use std::{
+    collections::{HashSet, VecDeque},
+    fmt::Display,
+};
 
 #[cfg(target_family = "wasm")]
 use serde::Serialize;
@@ -56,12 +59,12 @@ impl Game {
         })
     }
 
-    pub fn small() -> Self {
-        Self::new(11, 6, 2).unwrap()
+    pub fn small(players: usize) -> Self {
+        Self::new(11, 6, players).unwrap()
     }
 
-    pub fn large() -> Self {
-        Self::new(18, 10, 8).unwrap()
+    pub fn large(players: usize) -> Self {
+        Self::new(18, 10, players).unwrap()
     }
 
     const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u32 {
@@ -91,58 +94,68 @@ impl Game {
         }
     }
 
-    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> bool {
+    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Option<Vec<HashSet<Coord>>> {
         let cell = &mut self.board[row][col];
         // se la cella è già occupata
         if cell.atoms != 0 && cell.player != self.turn {
-            return false;
+            return None;
         }
         // se la scacchiera è piena si andrebbe in un loop infinito
         if self.atoms == self.max_atoms {
-            return false;
+            return None;
         }
         cell.player = self.turn;
         cell.atoms += 1;
         self.atoms += 1;
         self.players[self.turn].atoms += 1;
-        if cell.must_explode() {
-            self.explode(coord);
-        }
+        let result = Some(if cell.must_explode() {
+            self.explode(coord)
+        } else {
+            vec![]
+        });
         self.next_turn();
-        true
+        result
     }
 
-    fn explode(&mut self, coord @ (row, col): Coord) {
+    fn explode(&mut self, coord @ (row, col): Coord) -> Vec<HashSet<Coord>> {
+        let mut result = vec![];
         if !self.board[row][col].must_explode() {
-            return;
+            return result;
         }
-        let mut queue = VecDeque::from([coord]);
-        while let Some((row, col)) = queue.pop_front() {
-            let cell = &mut self.board[row][col];
-            cell.atoms -= cell.max_atoms;
-            if cell.atoms == 0 {
-                cell.player = usize::MAX;
-            }
-            for next @ (next_row, next_col) in [
-                (row.wrapping_sub(1), col),
-                (row + 1, col),
-                (row, col.wrapping_sub(1)),
-                (row, col + 1),
-            ] {
-                if next_row < self.board.len() && next_col < self.board[0].len() {
-                    let next_cell = &mut self.board[next_row][next_col];
-                    if next_cell.atoms != 0 && next_cell.player != self.turn {
-                        self.players[next_cell.player].atoms -= next_cell.atoms;
-                        self.players[self.turn].atoms += next_cell.atoms;
-                    }
-                    next_cell.player = self.turn;
-                    next_cell.atoms += 1;
-                    if next_cell.must_explode() {
-                        queue.push_back(next);
+        let mut to_explode = VecDeque::from([coord]);
+        while !to_explode.is_empty() {
+            let mut turn = HashSet::new();
+            for _ in 0..to_explode.len() {
+                let coord @ (row, col) = to_explode.pop_front().unwrap();
+                turn.insert(coord);
+                let cell = &mut self.board[row][col];
+                cell.atoms -= cell.max_atoms;
+                if cell.atoms == 0 {
+                    cell.player = usize::MAX;
+                }
+                for next @ (next_row, next_col) in [
+                    (row.wrapping_sub(1), col),
+                    (row + 1, col),
+                    (row, col.wrapping_sub(1)),
+                    (row, col + 1),
+                ] {
+                    if next_row < self.board.len() && next_col < self.board[0].len() {
+                        let next_cell = &mut self.board[next_row][next_col];
+                        if next_cell.atoms != 0 && next_cell.player != self.turn {
+                            self.players[next_cell.player].atoms -= next_cell.atoms;
+                            self.players[self.turn].atoms += next_cell.atoms;
+                        }
+                        next_cell.player = self.turn;
+                        next_cell.atoms += 1;
+                        if next_cell.must_explode() {
+                            to_explode.push_back(next);
+                        }
                     }
                 }
             }
+            result.push(turn);
         }
+        result
     }
 }
 
@@ -154,7 +167,7 @@ impl Cell {
 
 impl Default for Game {
     fn default() -> Self {
-        Self::small()
+        Self::small(2)
     }
 }
 
@@ -165,5 +178,20 @@ impl Default for Cell {
             player: usize::MAX,
             max_atoms: 0,
         }
+    }
+}
+
+impl Display for Game {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut result = String::new();
+        for row in &self.board {
+            for cell in row {
+                result.push_str(&format!("{} ", cell.atoms));
+            }
+            result.pop();
+            result.push('\n');
+        }
+        result.pop();
+        write!(f, "{}", result)
     }
 }
