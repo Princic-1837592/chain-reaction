@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{Cell, Game};
 
 #[test]
@@ -84,9 +86,9 @@ fn add_atom() {
     assert_eq!(game.atoms, 1);
 
     // verifica che non si possa muovere dove è già occupato da un altro giocatore
-    assert!(!game.add_atom((0, 0)));
+    assert!(game.add_atom((0, 0)).is_none());
 
-    game.add_atom((4, 4));
+    assert!(game.add_atom((4, 4)).unwrap().is_empty());
     /*
     1 0 0 0 0
     0 0 0 0 0
@@ -106,9 +108,12 @@ fn add_atom() {
     assert_eq!(game.atoms, 2);
 
     // verifica che non si possa muovere dove è già occupato da un altro giocatore
-    assert!(!game.add_atom((4, 4)));
+    assert!(game.add_atom((4, 4)).is_none());
 
-    game.add_atom((0, 0));
+    assert_eq!(
+        game.add_atom((0, 0)).unwrap(),
+        vec![HashSet::from([(0, 0)])]
+    );
     /*
     0 1 0 0 0
     1 0 0 0 0
@@ -143,7 +148,10 @@ fn add_atom() {
     assert_eq!(game.players[0].atoms, 2);
     assert_eq!(game.atoms, 3);
 
-    game.add_atom((4, 4));
+    assert_eq!(
+        game.add_atom((4, 4)).unwrap(),
+        vec![HashSet::from([(4, 4)])]
+    );
     /*
     0 1 0 0 0
     1 0 0 0 0
@@ -178,8 +186,8 @@ fn add_atom() {
     assert_eq!(game.players[1].atoms, 2);
     assert_eq!(game.atoms, 4);
 
-    game.add_atom((0, 0));
-    game.add_atom((4, 4));
+    assert!(game.add_atom((0, 0)).unwrap().is_empty());
+    assert!(game.add_atom((4, 4)).unwrap().is_empty());
     /*
     1 1 0 0 0
     1 0 0 0 0
@@ -188,7 +196,10 @@ fn add_atom() {
     0 0 0 1 1
     */
 
-    game.add_atom((0, 0));
+    assert_eq!(
+        game.add_atom((0, 0)).unwrap(),
+        vec![HashSet::from([(0, 0)])]
+    );
     /*
     0 2 0 0 0
     2 0 0 0 0
@@ -223,7 +234,10 @@ fn add_atom() {
     assert_eq!(game.players[0].atoms, 4);
     assert_eq!(game.atoms, 7);
 
-    game.add_atom((4, 4));
+    assert_eq!(
+        game.add_atom((4, 4)).unwrap(),
+        vec![HashSet::from([(4, 4)])]
+    );
     /*
     0 2 0 0 0
     2 0 0 0 0
@@ -258,8 +272,8 @@ fn add_atom() {
     assert_eq!(game.players[1].atoms, 4);
     assert_eq!(game.atoms, 8);
 
-    game.add_atom((0, 0));
-    game.add_atom((4, 4));
+    assert!(game.add_atom((0, 0)).unwrap().is_empty());
+    assert!(game.add_atom((4, 4)).unwrap().is_empty());
     /*
     1 2 0 0 0
     2 0 0 0 0
@@ -268,7 +282,14 @@ fn add_atom() {
     0 0 0 2 1
     */
 
-    game.add_atom((0, 0));
+    assert_eq!(
+        game.add_atom((0, 0)).unwrap(),
+        vec![
+            HashSet::from([(0, 0)]),
+            HashSet::from([(0, 1), (1, 0)]),
+            HashSet::from([(0, 0)])
+        ]
+    );
     /*
     0 1 1 0 0
     1 2 0 0 0
@@ -327,7 +348,14 @@ fn add_atom() {
     assert_eq!(game.players[0].atoms, 6);
     assert_eq!(game.atoms, 11);
 
-    game.add_atom((4, 4));
+    assert_eq!(
+        game.add_atom((4, 4)).unwrap(),
+        vec![
+            HashSet::from([(4, 4)]),
+            HashSet::from([(4, 3), (3, 4)]),
+            HashSet::from([(4, 4)])
+        ]
+    );
     /*
     0 1 1 0 0
     1 2 0 0 0
@@ -385,6 +413,57 @@ fn add_atom() {
     );
     assert_eq!(game.players[1].atoms, 6);
     assert_eq!(game.atoms, 12);
+
+    let mut game = Game::small(2);
+    for coord in [
+        (0, 5),
+        (0, 0),
+        (10, 5),
+        (10, 0),
+        (10, 4),
+        (10, 1),
+        (10, 4),
+        (10, 1),
+        (10, 3),
+        (10, 2),
+        (10, 3),
+        (10, 2),
+        (9, 5),
+        (9, 0),
+        (9, 4),
+        (9, 1),
+        (9, 4),
+        (9, 1),
+        (9, 4),
+        (9, 1),
+    ] {
+        assert!(game.add_atom(coord).unwrap().is_empty());
+    }
+    /*
+    1 0 0 0 0 1
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    0 0 0 0 0 0
+    1 3 0 0 3 1
+    1 2 2 2 2 1
+    */
+    assert_eq!(
+        game.add_atom((10, 5)).unwrap(),
+        vec![
+            HashSet::from([(10, 5)]),
+            HashSet::from([(10, 4)]),
+            HashSet::from([(9, 4), (10, 3)]),
+            HashSet::from([(10, 2), (9, 5)]),
+            HashSet::from([(10, 1), (10, 5)]),
+            HashSet::from([(9, 1), (10, 0), (10, 4)]),
+            HashSet::from([(9, 0)]),
+        ]
+    );
 }
 
 #[test]
