@@ -13,10 +13,6 @@ export function newGame(height: number, width: number, players: number): boolean
 * @returns {string | undefined}
 */
 export function addAtom(row: number, column: number): string | undefined;
-/**
-* @returns {string}
-*/
-export function getState(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -24,7 +20,6 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly newGame: (a: number, b: number, c: number) => number;
   readonly addAtom: (a: number, b: number, c: number) => void;
-  readonly getState: (a: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
 }

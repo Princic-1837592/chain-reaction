@@ -30,5 +30,5 @@ pub fn add_atom(row: usize, column: usize) -> Option<String> {
 
 #[wasm_bindgen(js_name = "getState")]
 pub fn get_state() -> String {
-    to_string(&GAME).unwrap()
+    GAME.with(|game| to_string(game).unwrap())
 }
