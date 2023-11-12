@@ -61,5 +61,13 @@ function feNewGame() {
     menu.classList.add("invisible");
 }
 
+function backToMenu() {
+    const grid = document.getElementById("game-container");
+    grid.classList.add("invisible");
+    const menu = document.getElementById("menu");
+    menu.classList.remove("invisible");
+}
+
 
 document.getElementById("start-button").addEventListener("click", feNewGame);
+document.getElementById("back-to-menu").addEventListener("click", backToMenu)

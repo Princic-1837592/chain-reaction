@@ -43,22 +43,28 @@
     }
 
     .slider::before {
+      $parts: 4;
+      $part: $total-height/$parts;
       content: "";
       position: absolute;
-      top: $total-height/5*2;
-      left: $total-height/5;
-      width: $total-height/5;
-      height: $total-height/5;
+      top: $part*($parts - 1)/2;
+      left: $part;
+      width: $part;
+      height: $part;
       border: 2px solid white;
       box-sizing: border-box;
       transition: 0.3s;
     }
 
     input:checked ~ .slider::before {
-      top: $total-height/5;
-      left: $total-width - $total-height/5*4;
-      width: $total-height/5*3;
-      height: $total-height/5*3;
+      $parts: 7;
+      $part: $total-height/$parts;
+      $occupied: 5;
+      $size: $part*$occupied;
+      top: $part*($parts - $occupied)/2;
+      left: $total-width - $part*($occupied+1);
+      width: $size;
+      height: $size;
     }
   }
 }

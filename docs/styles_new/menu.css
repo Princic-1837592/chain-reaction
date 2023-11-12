@@ -41,19 +41,19 @@
 #mode-selector-slider label .slider::before {
   content: "";
   position: absolute;
-  top: 40px;
-  left: 20px;
-  width: 20px;
-  height: 20px;
+  top: 37.5px;
+  left: 25px;
+  width: 25px;
+  height: 25px;
   border: 2px solid white;
   box-sizing: border-box;
   transition: 0.3s;
 }
 #mode-selector-slider label input:checked ~ .slider::before {
-  top: 20px;
-  left: 120px;
-  width: 60px;
-  height: 60px;
+  top: 14.2857142857px;
+  left: 114.2857142857px;
+  width: 71.4285714286px;
+  height: 71.4285714286px;
 }
 
 /*# sourceMappingURL=menu.css.map */
