@@ -1,14 +1,10 @@
+@import "vars.scss";
+
+#grid{
+  margin-top: $cell-size/2;
+}
+
 .small {
-  $cell-size: min(8vh,10vw);
-  $grid-width: 6;
-  $grid-height: 11;
-  $border-width: 1px;
-  $border: $border-width solid white;
-
-  &.grid {
-    margin-top: $cell-size/2;
-  }
-
   .row {
     grid-template-columns: repeat($grid-width, $cell-size);
   }

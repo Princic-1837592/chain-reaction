@@ -1,12 +1,13 @@
-.small.grid {
-  margin-top: min(8vh, 10vw)/2;
+#grid {
+  margin-top: min(7vh, 8vw)/2;
 }
+
 .small .row {
-  grid-template-columns: repeat(6, min(8vh, 10vw));
+  grid-template-columns: repeat(6, min(7vh, 8vw));
 }
 .small .cell {
-  width: min(8vh, 10vw);
-  height: min(8vh, 10vw);
+  width: min(7vh, 8vw);
+  height: min(7vh, 8vw);
   border-left: 1px solid white;
   border-top: 1px solid white;
 }

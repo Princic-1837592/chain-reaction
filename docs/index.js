@@ -1,6 +1,7 @@
 import init, {newGame} from "./pkg/frontend.js";
 
-init().then(()=>{});
+init().then(() => {
+});
 
 const FORCE_MOBILE = true;
 // const FORCE_MOBILE = false;
@@ -54,7 +55,7 @@ function render() {
 function feNewGame() {
     const grid_size_large = document.getElementById("grid-size").checked;
     initializeGrid(grid_size_large);
-    const grid = document.getElementById("grid");
+    const grid = document.getElementById("game-container");
     grid.classList.remove("invisible");
     const menu = document.getElementById("menu");
     menu.classList.add("invisible");

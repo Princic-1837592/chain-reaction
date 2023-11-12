@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="styles_new/styles.css">
     <link rel="stylesheet" type="text/css" href="styles_new/menu.css">
 
+    <link rel="stylesheet" type="text/css" href="styles_new/small/controls.css">
     <link rel="stylesheet" type="text/css" href="styles_new/small/grid.css">
 </head>
 <body>
@@ -43,12 +44,21 @@
         </div>
     </div>
 </div>
-<div class="game-container" id="game-container">
-    <div class="grid invisible" id="grid"></div>
+<div class="game-container invisible" id="game-container">
+    <div id="grid"></div>
     <div id="controls">
-        <div id="back-to-menu">
+        <div id="undo">
+            <label class="symbol">&#10913;</label>
+            <label class="name">Undo</label>
         </div>
-        <div id="undo"></div>
+        <div id="restart">
+            <label class="symbol">&#8634</label>
+            <label class="name">Restart</label>
+        </div>
+        <div id="back-to-menu">
+            <label class="symbol">&#10005;</label>
+            <label class="name">Close</label>
+        </div>
     </div>
 </div>
 <script src="index.js" type="module"></script>

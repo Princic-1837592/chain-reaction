@@ -1,0 +1,21 @@
+#controls {
+  display: grid;
+  grid-auto-flow: column;
+}
+
+#controls > div {
+  display: inline-block;
+}
+
+#controls div label {
+  display: inline-block;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+#controls label.symbol {
+  font-size: min(7vh, 8vw);
+}
+
+/*# sourceMappingURL=controls.css.map */
