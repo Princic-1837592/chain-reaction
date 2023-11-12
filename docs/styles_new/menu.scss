@@ -1,0 +1,64 @@
+#menu {
+  font-size: 40px;
+  width: 500px;
+  margin: 100px auto;
+  border: 1px white solid;
+}
+
+#menu > div {
+  margin: 100px auto 0;
+  width: max-content;
+  align-content: center;
+  align-items: center;
+
+  &:last-child {
+    margin-bottom: 100px;
+  }
+}
+
+#menu .title {
+  display: block;
+  text-align: center;
+  margin-bottom: auto;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+#mode-selector-slider {
+  $total-width: 200px;
+  $total-height: 100px;
+  border: 1px solid white;
+  width: $total-width;
+  height: $total-height;
+  margin: auto;
+  position: relative;
+
+  & label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    & input {
+      display: none;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      top: $total-height/5*2;
+      left: $total-height/5;
+      width: $total-height/5;
+      height: $total-height/5;
+      border: 2px solid white;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    input:checked ~ .slider::before {
+      top: $total-height/5;
+      left: $total-width - $total-height/5*4;
+      width: $total-height/5*3;
+      height: $total-height/5*3;
+    }
+  }
+}
