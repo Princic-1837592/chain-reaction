@@ -1,0 +1,59 @@
+#menu {
+  font-size: 40px;
+  width: 500px;
+  margin: 100px auto;
+  border: 1px white solid;
+}
+
+#menu > div {
+  margin: 100px auto 0;
+  width: max-content;
+  align-content: center;
+  align-items: center;
+}
+#menu > div:last-child {
+  margin-bottom: 100px;
+}
+
+#menu .title {
+  display: block;
+  text-align: center;
+  margin-bottom: auto;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+#mode-selector-slider {
+  border: 1px solid white;
+  width: 200px;
+  height: 100px;
+  margin: auto;
+  position: relative;
+}
+#mode-selector-slider label {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#mode-selector-slider label input {
+  display: none;
+}
+#mode-selector-slider label .slider::before {
+  content: "";
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+#mode-selector-slider label input:checked ~ .slider::before {
+  top: 20px;
+  left: 120px;
+  width: 60px;
+  height: 60px;
+}
+
+/*# sourceMappingURL=menu.css.map */
