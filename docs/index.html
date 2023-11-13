@@ -23,24 +23,26 @@
     <div id="players-select-container">
         <label class="title">Players</label>
         <div>
+            <p id="players-value">2</p>
             <label>
-                <select id="players-select">
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                </select>
+                <input type="range" min="2" max="8" value="2" id="players-slider">
             </label>
         </div>
+        <!--<label>
+            <select id="players-select">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </label>-->
     </div>
     <div id="start-button-container">
         <label class="title">New game</label>
-        <div class="header-content">
-            <button id="start-button">Start</button>
-        </div>
+        <button id="start-button">></button>
     </div>
 </div>
 <div class="game-container invisible" id="game-container">

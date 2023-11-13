@@ -3,25 +3,25 @@
   width: 500px;
   margin: 100px auto;
   border: 1px white solid;
-}
 
-#menu > div {
-  margin: 100px auto 0;
-  width: max-content;
-  align-content: center;
-  align-items: center;
+  > div {
+    margin: 50px auto 0;
+    width: max-content;
+    align-content: center;
+    align-items: center;
 
-  &:last-child {
-    margin-bottom: 100px;
+    &:last-child {
+      margin-bottom: 50px;
+    }
   }
-}
 
-#menu .title {
-  display: block;
-  text-align: center;
-  margin-bottom: auto;
-  font-weight: bold;
-  font-size: 50px;
+  .title {
+    display: block;
+    text-align: center;
+    margin-bottom: auto;
+    font-weight: bold;
+    font-size: 50px;
+  }
 }
 
 #mode-selector-slider {
@@ -66,5 +66,37 @@
       width: $size;
       height: $size;
     }
+  }
+}
+
+#start-button-container {
+  #start-button {
+    background: black;
+    border: 1px solid white;
+    font-family: monospace;
+    font-size: 100px;
+    color: inherit;
+    width: 200px;
+    margin: auto;
+    display: block;
+    text-align: center;
+  }
+}
+
+#players-select-container {
+  #players-slider {
+    width: 200px;
+    //height: 100px;
+    font-size: 50px;
+    text-align: center;
+    background: black;
+    outline: white;
+    color: white;
+  }
+
+  #players-value {
+    font-size: 40px;
+    margin: 20px 0 0 0;
+    text-align: center;
   }
 }

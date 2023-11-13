@@ -68,6 +68,11 @@ function backToMenu() {
     menu.classList.remove("invisible");
 }
 
+function refreshPlayersCount() {
+    document.getElementById("players-value").innerText = this.value;
+}
+
 
 document.getElementById("start-button").addEventListener("click", feNewGame);
 document.getElementById("back-to-menu").addEventListener("click", backToMenu)
+document.getElementById("players-slider").oninput = refreshPlayersCount;

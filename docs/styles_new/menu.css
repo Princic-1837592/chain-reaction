@@ -4,17 +4,15 @@
   margin: 100px auto;
   border: 1px white solid;
 }
-
 #menu > div {
-  margin: 100px auto 0;
+  margin: 50px auto 0;
   width: max-content;
   align-content: center;
   align-items: center;
 }
 #menu > div:last-child {
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 }
-
 #menu .title {
   display: block;
   text-align: center;
@@ -54,6 +52,32 @@
   left: 114.2857142857px;
   width: 71.4285714286px;
   height: 71.4285714286px;
+}
+
+#start-button-container #start-button {
+  background: black;
+  border: 1px solid white;
+  font-family: monospace;
+  font-size: 100px;
+  color: inherit;
+  width: 200px;
+  margin: auto;
+  display: block;
+  text-align: center;
+}
+
+#players-select-container #players-slider {
+  width: 200px;
+  font-size: 50px;
+  text-align: center;
+  background: black;
+  outline: white;
+  color: white;
+}
+#players-select-container #players-value {
+  font-size: 40px;
+  margin: 20px 0 0 0;
+  text-align: center;
 }
 
 /*# sourceMappingURL=menu.css.map */
