@@ -15,7 +15,11 @@
 }
 
 #controls label.symbol {
-  font-size: min(7vh, 8vw);
+  font-size: min(7vh, 14vw);
+}
+
+#controls label.name {
+  font-size: 30px;
 }
 
 /*# sourceMappingURL=controls.css.map */

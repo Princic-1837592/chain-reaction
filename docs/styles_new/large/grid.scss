@@ -1,0 +1,26 @@
+@import "vars.scss";
+
+#grid {
+  margin-top: $cell-size/2;
+}
+
+.large {
+  .row {
+    grid-template-columns: repeat($grid-width, $cell-size);
+  }
+
+  .cell {
+    width: $cell-size;
+    height: $cell-size;
+    border-left: $border;
+    border-top: $border;
+  }
+
+  .cell:last-child {
+    border-right: $border;
+  }
+
+  .row:last-child .cell {
+    border-bottom: $border;
+  }
+}

@@ -23,13 +23,13 @@ function initializePage() {
 function initializeGrid(large) {
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
-    grid.classList.remove("big", "small");
+    grid.classList.remove("large", "small");
     let width;
     let height;
     if (large) {
         width = BIG_WIDTH;
         height = BIG_HEIGHT;
-        grid.classList.add("big");
+        grid.classList.add("large");
     } else {
         width = SMALL_WIDTH;
         height = SMALL_HEIGHT;

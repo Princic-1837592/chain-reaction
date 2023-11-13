@@ -72,11 +72,12 @@
 #players-select-container #players-slider {
   appearance: none;
   width: 100%;
-  height: 20px;
+  height: 1px;
   border-radius: 10px;
   text-align: center;
   background: black;
   border: 1px solid white;
+  box-sizing: border-box;
 }
 #players-select-container #players-value {
   font-size: 40px;
