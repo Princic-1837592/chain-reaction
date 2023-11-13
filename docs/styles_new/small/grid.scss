@@ -1,15 +1,15 @@
 @import "vars.scss";
 
-#grid{
-  margin-top: $cell-size/2;
-}
 
 .small {
+  margin-top: $cell-size/2;
+
   .row {
     grid-template-columns: repeat($grid-width, $cell-size);
   }
 
   .cell {
+    position: relative;
     width: $cell-size;
     height: $cell-size;
     border-left: $border;

@@ -1,11 +1,11 @@
-#grid {
+.small {
   margin-top: min(7vh, 14vw)/2;
 }
-
 .small .row {
   grid-template-columns: repeat(6, min(7vh, 14vw));
 }
 .small .cell {
+  position: relative;
   width: min(7vh, 14vw);
   height: min(7vh, 14vw);
   border-left: 1px solid white;

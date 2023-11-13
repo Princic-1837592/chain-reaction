@@ -39,10 +39,17 @@ function initializeGrid(large) {
     rowTemplate.classList.add("row");
     const cellTemplate = document.createElement("div");
     cellTemplate.classList.add("cell")
+    const ballContainerTemplate = document.createElement("div");
+    ballContainerTemplate.classList.add("ball-container")
+    const ball1 = document.createElement("div");
+    ball1.classList.add("ball");
+    ball1.classList.add("ball-1-1");
+    ballContainerTemplate.appendChild(ball1.cloneNode(false));
+    cellTemplate.appendChild(ballContainerTemplate.cloneNode(true));
     for (let i = 0; i < height; i++) {
         const row = rowTemplate.cloneNode(false);
         for (let j = 0; j < width; j++) {
-            row.appendChild(cellTemplate.cloneNode(false));
+            row.appendChild(cellTemplate.cloneNode(true));
         }
         grid.appendChild(row);
     }
