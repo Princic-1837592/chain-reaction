@@ -66,6 +66,9 @@
   text-align: center;
 }
 
+#players-select-container {
+  user-select: auto;
+}
 #players-select-container #players-slider {
   appearance: none;
   width: 100%;

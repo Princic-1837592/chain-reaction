@@ -84,6 +84,8 @@
 }
 
 #players-select-container {
+  user-select: auto;
+
   #players-slider {
     appearance: none;
     width: 100%;
