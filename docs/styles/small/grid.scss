@@ -1,6 +1,5 @@
 @import "vars.scss";
 
-
 .small {
   margin-top: $cell-size/2;
 
@@ -9,7 +8,6 @@
   }
 
   .cell {
-    position: relative;
     width: $cell-size;
     height: $cell-size;
   }

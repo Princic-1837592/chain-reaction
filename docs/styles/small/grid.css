@@ -5,7 +5,6 @@
   grid-template-columns: repeat(6, min(7vh, 14vw));
 }
 .small .cell {
-  position: relative;
   width: min(7vh, 14vw);
   height: min(7vh, 14vw);
 }

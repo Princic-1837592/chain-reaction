@@ -4,18 +4,21 @@
     transform: rotate(360deg);
   }
 }
-.small .ball-container {
+.ball-container {
   position: absolute;
   width: 100%;
   height: 100%;
 }
-.small .rotate-left {
+
+.rotate-left {
   animation: rotate 2s infinite forwards linear;
 }
-.small .rotate-right {
+
+.rotate-right {
   animation: rotate 2s infinite forwards linear reverse;
 }
-.small .ball {
+
+.ball {
   position: absolute;
   width: 50%;
   height: 50%;
@@ -24,29 +27,35 @@
   align-self: center;
   box-sizing: border-box;
 }
-.small .ball-1-1 {
+
+.ball-1-1 {
   top: 25%;
   left: 25%;
 }
-.small .ball-2-1 {
+
+.ball-2-1 {
   top: 8.3333333333%;
   left: 25%;
 }
-.small .ball-2-2 {
+
+.ball-2-2 {
   top: 41.6666666667%;
   left: 25%;
 }
-.small .ball-3-1 {
+
+.ball-3-1 {
   top: 8.3333333333%;
   left: 25%;
   z-index: 0;
 }
-.small .ball-3-2 {
+
+.ball-3-2 {
   top: 41.6666666667%;
   left: 8.3333333333%;
   z-index: 1;
 }
-.small .ball-3-3 {
+
+.ball-3-3 {
   top: 41.6666666667%;
   left: 41.6666666667%;
   z-index: 2;

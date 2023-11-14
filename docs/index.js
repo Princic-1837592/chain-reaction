@@ -1,7 +1,6 @@
 import init, {newGame, addAtom, getState} from "./pkg/frontend.js";
 
 init().then(r => {
-    feNewGame();
 });
 
 const SMALL_WIDTH = 6, SMALL_HEIGHT = 11;
@@ -66,7 +65,7 @@ function render() {
                     ballContainer.classList.add("rotate-left");
                 } else if (atoms === 3) {
                     ballContainer.classList.add("rotate-right");
-                }else{
+                } else {
                     ballContainer.classList.remove("rotate-left");
                     ballContainer.classList.remove("rotate-right");
                 }
@@ -105,7 +104,7 @@ function refreshPlayersCount() {
 
 
 document.getElementById("start-button").addEventListener("click", feNewGame);
-// document.getElementById("undo").addEventListener("click", backToMenu);
+// document.getElementById("undo").addEventListener("click", feUndo);
 document.getElementById("restart").addEventListener("click", feNewGame);
 document.getElementById("back-to-menu").addEventListener("click", backToMenu);
 document.getElementById("players-slider").oninput = refreshPlayersCount;
