@@ -124,11 +124,15 @@ impl Game {
         }
         let mut to_explode = VecDeque::from([coord]);
         while !to_explode.is_empty() {
-            let mut turn = HashSet::new();
+            let mut round = HashSet::new();
             for _ in 0..to_explode.len() {
                 let coord @ (row, col) = to_explode.pop_front().unwrap();
-                turn.insert(coord);
+                round.insert(coord);
                 let cell = &mut self.board[row][col];
+                // se la cella ha subito più di un'esplosione nello stesso round
+                if !cell.must_explode() {
+                    continue;
+                }
                 cell.atoms -= cell.max_atoms;
                 if cell.atoms == 0 {
                     cell.player = usize::MAX;
@@ -153,7 +157,7 @@ impl Game {
                     }
                 }
             }
-            result.push(turn);
+            result.push(round);
         }
         result
     }
