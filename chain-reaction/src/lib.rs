@@ -23,7 +23,7 @@ pub struct Game {
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 #[cfg_attr(test, derive(PartialEq, Eq))]
-struct Cell {
+pub struct Cell {
     atoms: u32,
     player: usize,
     max_atoms: u32,
@@ -41,6 +41,13 @@ pub enum Error {
     Occupied,
     GameWon,
     BoardFull,
+}
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(Serialize))]
+pub struct Explosion {
+    coord: Coord,
+    atoms: u32,
 }
 
 type Coord = (usize, usize);
@@ -109,7 +116,10 @@ impl Game {
         }
     }
 
-    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Result<Vec<HashSet<Coord>>, Error> {
+    pub fn add_atom(
+        &mut self,
+        coord @ (row, col): Coord,
+    ) -> Result<Vec<HashSet<Explosion>>, Error> {
         if self.won {
             return Err(Error::GameWon);
         }
@@ -135,7 +145,7 @@ impl Game {
         Ok(result)
     }
 
-    fn explode(&mut self, coord @ (row, col): Coord) -> Vec<HashSet<Coord>> {
+    fn explode(&mut self, coord @ (row, col): Coord) -> Vec<HashSet<Explosion>> {
         let mut result = vec![];
         if !self.board[row][col].must_explode() {
             return result;
@@ -147,12 +157,12 @@ impl Game {
             let mut round = HashSet::new();
             for _ in 0..to_explode.len() {
                 let coord @ (row, col) = to_explode.pop_front().unwrap();
-                round.insert(coord);
                 let cell = &mut self.board[row][col];
                 // se la cella ha subito più di un'esplosione nello stesso round
                 if !cell.must_explode() {
                     continue;
                 }
+                round.insert((coord, cell.max_atoms).into());
                 if !exploded[row][col] {
                     exploded[row][col] = true;
                     exploded_count_down -= 1;
@@ -193,6 +203,24 @@ impl Game {
 impl Cell {
     const fn must_explode(&self) -> bool {
         self.atoms >= self.max_atoms
+    }
+}
+
+impl Explosion {
+    fn new(coord: Coord, atoms: u32) -> Self {
+        Self { coord, atoms }
+    }
+}
+
+impl From<(Coord, u32)> for Explosion {
+    fn from((coord, atoms): (Coord, u32)) -> Self {
+        Self::new(coord, atoms)
+    }
+}
+
+impl From<(usize, usize, u32)> for Explosion {
+    fn from((row, col, atoms): (usize, usize, u32)) -> Self {
+        Self::new((row, col), atoms)
     }
 }
 
