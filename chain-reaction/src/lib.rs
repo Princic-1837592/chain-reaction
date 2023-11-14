@@ -38,7 +38,8 @@ type Coord = (usize, usize);
 
 impl Game {
     pub fn new(height: usize, width: usize, players: usize) -> Option<Self> {
-        if height < 3 || height > 18 || width < 3 || width > 10 || players < 2 || players > 8 {
+        if !(3..=18).contains(&height) || !(3..=10).contains(&width) || !(2..=8).contains(&players)
+        {
             return None;
         }
         let mut board = vec![vec![Cell::default(); width]; height];
