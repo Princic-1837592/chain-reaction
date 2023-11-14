@@ -17,6 +17,7 @@ pub struct Game {
     turn: usize,
     atoms: u32,
     max_atoms: u32,
+    won: bool,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -32,6 +33,14 @@ struct Cell {
 #[cfg_attr(feature = "serde", derive(Serialize))]
 struct Player {
     atoms: u32,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize))]
+pub enum Error {
+    Occupied,
+    GameWon,
+    BoardFull,
 }
 
 type Coord = (usize, usize);
@@ -57,6 +66,7 @@ impl Game {
             max_atoms: 4
                 + 2 * ((height - 2) * 2 + (width - 2) * 2)
                 + 3 * ((height - 2) * (width - 2)),
+            won: false,
         })
     }
 
@@ -84,6 +94,7 @@ impl Game {
     }
 
     fn next_turn(&mut self) {
+        let old_turn = self.turn;
         loop {
             self.turn = (self.turn + 1) % self.players.len();
             // se ci sono meno atomi del numero di giocatori significa che nessuno può essere stato
@@ -93,29 +104,35 @@ impl Game {
                 break;
             }
         }
+        if old_turn == self.turn {
+            self.won = true;
+        }
     }
 
-    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Option<Vec<HashSet<Coord>>> {
+    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Result<Vec<HashSet<Coord>>, Error> {
+        if self.won {
+            return Err(Error::GameWon);
+        }
         let cell = &mut self.board[row][col];
         // se la cella è già occupata
         if cell.atoms != 0 && cell.player != self.turn {
-            return None;
+            return Err(Error::Occupied);
         }
         // se la scacchiera è piena si andrebbe in un loop infinito
         if self.atoms == self.max_atoms {
-            return None;
+            return Err(Error::BoardFull);
         }
         cell.player = self.turn;
         cell.atoms += 1;
         self.atoms += 1;
         self.players[self.turn].atoms += 1;
-        let result = Some(if cell.must_explode() {
+        let result = if cell.must_explode() {
             self.explode(coord)
         } else {
             vec![]
-        });
+        };
         self.next_turn();
-        result
+        Ok(result)
     }
 
     fn explode(&mut self, coord @ (row, col): Coord) -> Vec<HashSet<Coord>> {
@@ -165,6 +182,9 @@ impl Game {
                 }
             }
             result.push(round);
+        }
+        if exploded_count_down == 0 {
+            self.won = true;
         }
         result
     }
