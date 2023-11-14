@@ -122,8 +122,10 @@ impl Game {
         if !self.board[row][col].must_explode() {
             return result;
         }
+        let mut exploded = vec![vec![false; self.board[0].len()]; self.board.len()];
+        let mut exploded_count_down = self.board.len() * self.board[0].len();
         let mut to_explode = VecDeque::from([coord]);
-        while !to_explode.is_empty() {
+        while !to_explode.is_empty() && exploded_count_down > 0 {
             let mut round = HashSet::new();
             for _ in 0..to_explode.len() {
                 let coord @ (row, col) = to_explode.pop_front().unwrap();
@@ -132,6 +134,10 @@ impl Game {
                 // se la cella ha subito più di un'esplosione nello stesso round
                 if !cell.must_explode() {
                     continue;
+                }
+                if !exploded[row][col] {
+                    exploded[row][col] = true;
+                    exploded_count_down -= 1;
                 }
                 cell.atoms -= cell.max_atoms;
                 if cell.atoms == 0 {
