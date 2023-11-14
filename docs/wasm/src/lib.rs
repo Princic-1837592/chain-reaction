@@ -9,14 +9,13 @@ static GAME: RefCell<Game> = RefCell::new(Game::default());
 }
 
 #[wasm_bindgen(js_name = "newGame")]
-pub fn new_game(height: usize, width: usize, players: usize) -> bool {
-    let new_game = Game::new(height, width, players);
-    if let Some(game) = new_game {
-        GAME.with(|g| g.replace(game));
-        true
+pub fn new_game(large: bool, players: usize) {
+    let new_game = if large {
+        Game::large(players)
     } else {
-        false
-    }
+        Game::small(players)
+    };
+    GAME.with(|g| g.replace(new_game));
 }
 
 #[wasm_bindgen(js_name = "addAtom")]

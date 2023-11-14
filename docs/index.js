@@ -1,6 +1,6 @@
-import init, {newGame} from "./pkg/frontend.js";
+import init, {newGame, addAtom, getState} from "./pkg/frontend.js";
 
-init().then(() => {
+init().then(r => {
 });
 
 const FORCE_MOBILE = true;
@@ -8,17 +8,6 @@ const FORCE_MOBILE = true;
 const SMALL_WIDTH = 6, SMALL_HEIGHT = 11;
 const BIG_WIDTH = 10, BIG_HEIGHT = 18;
 const COLORS = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "magenta"];
-
-function initializePage() {
-    let device = "desktop";
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || FORCE_MOBILE) {
-        device = "mobile";
-    }
-    document.getElementById("game-container").classList.add(device);
-    //todo togliere
-    initializeGrid(false);
-    render();
-}
 
 function initializeGrid(large) {
     const grid = document.getElementById("grid");
@@ -39,29 +28,48 @@ function initializeGrid(large) {
     rowTemplate.classList.add("row");
     const cellTemplate = document.createElement("div");
     cellTemplate.classList.add("cell")
-    const ballContainerTemplate = document.createElement("div");
-    ballContainerTemplate.classList.add("ball-container")
-    const ball1 = document.createElement("div");
-    ball1.classList.add("ball");
-    ball1.classList.add("ball-1-1");
-    ballContainerTemplate.appendChild(ball1.cloneNode(false));
-    cellTemplate.appendChild(ballContainerTemplate.cloneNode(true));
     for (let i = 0; i < height; i++) {
         const row = rowTemplate.cloneNode(false);
         for (let j = 0; j < width; j++) {
-            row.appendChild(cellTemplate.cloneNode(true));
+            const cell = cellTemplate.cloneNode(false);
+            cell.id = `${i}-${j}`;
+            cell.addEventListener("click", feAddAtom);
+            row.appendChild(cell);
         }
         grid.appendChild(row);
     }
 }
 
 function render() {
+    const {atoms: _atoms, board, max_atoms: _max_atoms, players: _players, turn: turn} = JSON.parse(getState());
+    const ballContainerTemplate = document.createElement("div");
+    ballContainerTemplate.classList.add("ball-container");
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            const cell = document.getElementById(`${i}-${j}`);
+            cell.innerHTML = "";
+            if (board[i][j].atoms > 0) {
+                const ballContainer = ballContainerTemplate.cloneNode(false);
+                if (board[i][j].atoms >= 2) {
+                    ballContainer.classList.add("rotate");
+                }
+                cell.appendChild(ballContainer);
+            }
+        }
+    }
+}
 
+function feAddAtom() {
+    const [_id, i, j] = /(\d+)-(\d+)/.exec(this.id);
+    const _explosions = JSON.parse(addAtom(parseInt(i), parseInt(j)) || "null");
+    render();
 }
 
 function feNewGame() {
-    const grid_size_large = document.getElementById("grid-size").checked;
-    initializeGrid(grid_size_large);
+    const large = document.getElementById("grid-size").checked;
+    const players = document.getElementById("players-slider").value;
+    newGame(large, parseInt(players));
+    initializeGrid(large);
     const grid = document.getElementById("game-container");
     grid.classList.remove("invisible");
     const menu = document.getElementById("menu");
