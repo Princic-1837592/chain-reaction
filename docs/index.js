@@ -78,33 +78,40 @@ function render() {
     }
 }
 
+let ANIMATING = false;
+
 async function feAddAtom() {
+    if (ANIMATING) {
+        return;
+    }
+    ANIMATING = true;
     const [_id, i, j] = /cell-(\d+)-(\d+)/.exec(this.id);
-    //-------------
+    const state = JSON.parse(getState());
+    const turn = state["turn"];
+    const height = state["board"].length;
     const explosions = JSON.parse(addAtom(parseInt(i), parseInt(j))) || [];
-    //-------------
-    // render();
     const near = {
         "up": [-1, 0],
         "right": [0, 1],
-        "down": [-1, 0],
+        "down": [1, 0],
         "left": [0, -1],
     }
     for (const round of explosions) {
         for (const {coord: [i, j], atoms} of round) {
             const balls = document.getElementById(`ball-container-${i}-${j}`);
+            for (let i = 0; i < atoms; i++) {
+                try {
+                    balls.removeChild(balls.lastChild);
+                } catch {
+                }
+            }
             let directions = [];
             switch (atoms) {
                 case 2:
-                    balls.removeChild(balls.lastChild);
-                    try {
-                        balls.removeChild(balls.lastChild);
-                    } catch {
-                    }
-                    if (i !== 0) {
-                        directions.push("up");
-                    } else {
+                    if (i === 0) {
                         directions.push("down");
+                    } else {
+                        directions.push("up");
                     }
                     if (j === 0) {
                         directions.push("right");
@@ -113,25 +120,42 @@ async function feAddAtom() {
                     }
                     break;
                 case 3:
-                    break
+                    if (i === 0) {
+                        directions.push("down");
+                        directions.push("left");
+                        directions.push("right");
+                    } else if (j === 0) {
+                        directions.push("down");
+                        directions.push("right");
+                        directions.push("up");
+                    } else if (i === height - 1) {
+                        directions.push("left");
+                        directions.push("right");
+                        directions.push("up");
+                    } else {
+                        directions.push("left");
+                        directions.push("down");
+                        directions.push("up");
+                    }
+                    break;
                 case 4:
-                    break
+                    directions = ["up", "down", "left", "right"];
+                    break;
             }
             const ballTemplate = document.createElement("div");
             ballTemplate.classList.add("ball");
             for (const direction of directions) {
                 const ball = ballTemplate.cloneNode();
                 ball.classList.add(direction);
-                console.log(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
-                ball.style.backgroundColor = COLORS[board[i][j].player];
+                ball.style.backgroundColor = COLORS[turn];
                 const next = document.getElementById(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
                 next.appendChild(ball);
-                console.log(ball);
             }
         }
+        await new Promise(r => setTimeout(r, 200));
     }
-    await new Promise(r => setTimeout(r, 1000));
     render();
+    ANIMATING = false;
 }
 
 function feNewGame() {

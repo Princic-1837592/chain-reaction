@@ -98,9 +98,54 @@
   animation: up 0.2s forwards linear;
 }
 
+.down {
+  top: 25%;
+  left: 25%;
+  animation: down 0.2s forwards linear;
+}
+
+.left {
+  top: 25%;
+  left: 25%;
+  animation: left 0.2s forwards linear;
+}
+
+.right {
+  top: 25%;
+  left: 25%;
+  animation: right 0.2s forwards linear;
+}
+
 @keyframes up {
+  from {
+    transform: translateY(200%);
+  }
   100% {
+    transform: translateY(0);
+  }
+}
+@keyframes down {
+  from {
     transform: translateY(-200%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes left {
+  from {
+    transform: translateX(200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes right {
+  from {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
 
