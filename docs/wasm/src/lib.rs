@@ -19,12 +19,9 @@ pub fn new_game(large: bool, players: usize) {
 }
 
 #[wasm_bindgen(js_name = "addAtom")]
-pub fn add_atom(row: usize, column: usize) -> Option<String> {
-    GAME.with(|game| {
-        game.borrow_mut()
-            .add_atom((row, column))
-            .map(|explosions| to_string(&explosions).unwrap())
-    })
+pub fn add_atom(row: usize, column: usize) -> String {
+    GAME.with(|game| to_string(&game.borrow_mut().add_atom((row, column)).ok()))
+        .unwrap()
 }
 
 #[wasm_bindgen(js_name = "getState")]

@@ -8,9 +8,9 @@ export function newGame(large: boolean, players: number): void;
 /**
 * @param {number} row
 * @param {number} column
-* @returns {string | undefined}
+* @returns {string}
 */
-export function addAtom(row: number, column: number): string | undefined;
+export function addAtom(row: number, column: number): string;
 /**
 * @returns {string}
 */
