@@ -113,7 +113,7 @@ fn add_atom() {
 
     assert_eq!(
         game.add_atom((0, 0)).unwrap(),
-        vec![HashSet::from([(0, 0)])]
+        vec![HashSet::from([(0, 0, 2).into()])]
     );
     /*
     0 1 0 0 0
@@ -151,7 +151,7 @@ fn add_atom() {
 
     assert_eq!(
         game.add_atom((4, 4)).unwrap(),
-        vec![HashSet::from([(4, 4)])]
+        vec![HashSet::from([(4, 4, 2).into()])]
     );
     /*
     0 1 0 0 0
@@ -199,7 +199,7 @@ fn add_atom() {
 
     assert_eq!(
         game.add_atom((0, 0)).unwrap(),
-        vec![HashSet::from([(0, 0)])]
+        vec![HashSet::from([(0, 0, 2).into()])]
     );
     /*
     0 2 0 0 0
@@ -237,7 +237,7 @@ fn add_atom() {
 
     assert_eq!(
         game.add_atom((4, 4)).unwrap(),
-        vec![HashSet::from([(4, 4)])]
+        vec![HashSet::from([(4, 4, 2).into()])]
     );
     /*
     0 2 0 0 0
@@ -286,9 +286,9 @@ fn add_atom() {
     assert_eq!(
         game.add_atom((0, 0)).unwrap(),
         vec![
-            HashSet::from([(0, 0)]),
-            HashSet::from([(0, 1), (1, 0)]),
-            HashSet::from([(0, 0)])
+            HashSet::from([(0, 0, 2).into()]),
+            HashSet::from([(0, 1, 3).into(), (1, 0, 3).into()]),
+            HashSet::from([(0, 0, 2).into()])
         ]
     );
     /*
@@ -352,9 +352,9 @@ fn add_atom() {
     assert_eq!(
         game.add_atom((4, 4)).unwrap(),
         vec![
-            HashSet::from([(4, 4)]),
-            HashSet::from([(4, 3), (3, 4)]),
-            HashSet::from([(4, 4)])
+            HashSet::from([(4, 4, 2).into()]),
+            HashSet::from([(4, 3, 3).into(), (3, 4, 3).into()]),
+            HashSet::from([(4, 4, 2).into()])
         ]
     );
     /*
@@ -460,13 +460,13 @@ fn add_atom() {
     assert_eq!(
         game.add_atom((10, 5)).unwrap(),
         vec![
-            HashSet::from([(10, 5)]),
-            HashSet::from([(10, 4)]),
-            HashSet::from([(9, 4), (10, 3)]),
-            HashSet::from([(10, 2), (9, 5)]),
-            HashSet::from([(10, 1), (10, 5)]),
-            HashSet::from([(9, 1), (10, 0), (10, 4)]),
-            HashSet::from([(9, 0)]),
+            HashSet::from([(10, 5, 2).into()]),
+            HashSet::from([(10, 4, 3).into()]),
+            HashSet::from([(9, 4, 4).into(), (10, 3, 3).into()]),
+            HashSet::from([(10, 2, 3).into(), (9, 5, 3).into()]),
+            HashSet::from([(10, 1, 3).into(), (10, 5, 2).into()]),
+            HashSet::from([(9, 1, 4).into(), (10, 0, 2).into(), (10, 4, 3).into()]),
+            HashSet::from([(9, 0, 3).into()]),
         ]
     );
     assert_eq!(
