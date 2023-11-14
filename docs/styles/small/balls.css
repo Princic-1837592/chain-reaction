@@ -4,32 +4,52 @@
     transform: rotate(360deg);
   }
 }
-.small .ball {
-  position: absolute;
-  width: calc(min(7vh, 14vw) / 3);
-  height: calc(min(7vh, 14vw) / 3);
-  border-radius: 50%;
-  border: 2px white solid;
-}
 .small .ball-container {
   position: absolute;
   width: 100%;
   height: 100%;
 }
-.small .rotate {
-  animation: rotate 4s infinite forwards linear;
+.small .rotate-left {
+  animation: rotate 2s infinite forwards linear;
+}
+.small .rotate-right {
+  animation: rotate 2s infinite forwards linear reverse;
+}
+.small .ball {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  border: 1px black solid;
+  align-self: center;
+  box-sizing: border-box;
 }
 .small .ball-1-1 {
-  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 2);
-  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 2);
+  top: 25%;
+  left: 25%;
 }
 .small .ball-2-1 {
-  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3 * 2);
-  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3 * 2);
+  top: 8.3333333333%;
+  left: 25%;
 }
 .small .ball-2-2 {
-  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3);
-  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3);
+  top: 41.6666666667%;
+  left: 25%;
+}
+.small .ball-3-1 {
+  top: 8.3333333333%;
+  left: 25%;
+  z-index: 0;
+}
+.small .ball-3-2 {
+  top: 41.6666666667%;
+  left: 8.3333333333%;
+  z-index: 1;
+}
+.small .ball-3-3 {
+  top: 41.6666666667%;
+  left: 41.6666666667%;
+  z-index: 2;
 }
 
 /*# sourceMappingURL=balls.css.map */

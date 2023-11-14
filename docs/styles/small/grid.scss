@@ -12,15 +12,5 @@
     position: relative;
     width: $cell-size;
     height: $cell-size;
-    border-left: $border;
-    border-top: $border;
-  }
-
-  .cell:last-child {
-    border-right: $border;
-  }
-
-  .row:last-child .cell {
-    border-bottom: $border;
   }
 }

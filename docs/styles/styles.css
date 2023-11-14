@@ -20,8 +20,22 @@ body {
 .game-container {
     width: max-content;
     margin: auto;
+    touch-action: manipulation;
 }
 
 .invisible {
     display: none;
+}
+
+.cell {
+    border-left: 1px solid white;
+    border-top: 1px solid white;
+}
+
+.cell:last-child {
+    border-right: 1px solid white;
+}
+
+.row:last-child .cell {
+    border-bottom: 1px solid white;
 }

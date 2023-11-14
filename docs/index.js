@@ -1,10 +1,9 @@
 import init, {newGame, addAtom, getState} from "./pkg/frontend.js";
 
 init().then(r => {
+    feNewGame();
 });
 
-const FORCE_MOBILE = true;
-// const FORCE_MOBILE = false;
 const SMALL_WIDTH = 6, SMALL_HEIGHT = 11;
 const BIG_WIDTH = 10, BIG_HEIGHT = 18;
 const COLORS = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "magenta"];
@@ -42,28 +41,34 @@ function initializeGrid(large) {
         }
         grid.appendChild(row);
     }
+    render();
 }
 
 function render() {
     const {atoms: _atoms, board, max_atoms: _max_atoms, players: _players, turn: turn} = JSON.parse(getState());
-    console.log(JSON.parse(getState()));
+    // console.log(JSON.parse(getState()));
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
+            document.getElementById(`cell-${i}-${j}`).style.borderColor = COLORS[turn];
             const ballContainer = document.getElementById(`ball-container-${i}-${j}`);
             ballContainer.innerHTML = "";
             const atoms = board[i][j].atoms;
             if (atoms > 0) {
-                console.log(i, j, atoms);
                 const ballTemplate = document.createElement("div");
                 ballTemplate.classList.add("ball");
+                ballTemplate.style.backgroundColor = COLORS[board[i][j].player];
                 for (let b = 1; b <= atoms; b++) {
-                    const ball = ballTemplate.cloneNode(false);
+                    const ball = ballTemplate.cloneNode(true);
                     ball.classList.add(`ball-${atoms}-${b}`);
-                    // ball.classList.add(COLORS[board[i][j].player]);
                     ballContainer.appendChild(ball);
                 }
-                if (atoms >= 2) {
-                    ballContainer.classList.add("rotate");
+                if (atoms === 2) {
+                    ballContainer.classList.add("rotate-left");
+                } else if (atoms === 3) {
+                    ballContainer.classList.add("rotate-right");
+                }else{
+                    ballContainer.classList.remove("rotate-left");
+                    ballContainer.classList.remove("rotate-right");
                 }
             }
         }
@@ -71,7 +76,6 @@ function render() {
 }
 
 function feAddAtom() {
-    console.log(this.id);
     const [_id, i, j] = /cell-(\d+)-(\d+)/.exec(this.id);
     const _explosions = JSON.parse(addAtom(parseInt(i), parseInt(j)) || "null");
     render();
@@ -101,5 +105,7 @@ function refreshPlayersCount() {
 
 
 document.getElementById("start-button").addEventListener("click", feNewGame);
-document.getElementById("back-to-menu").addEventListener("click", backToMenu)
+// document.getElementById("undo").addEventListener("click", backToMenu);
+document.getElementById("restart").addEventListener("click", feNewGame);
+document.getElementById("back-to-menu").addEventListener("click", backToMenu);
 document.getElementById("players-slider").oninput = refreshPlayersCount;
