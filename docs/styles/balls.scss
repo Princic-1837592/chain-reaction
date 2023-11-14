@@ -1,12 +1,5 @@
 $animation-duration: 2s;
 
-@keyframes rotate {
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
 $size: 50%;
 $center: 100%/2 - $size/2;
 
@@ -96,4 +89,23 @@ $center: 100%/2 - $size/2;
   top: $center;
   left: $center;
   z-index: 5;
+}
+
+@keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.up {
+  top: $center;
+  left: $center;
+  animation: up 0.2s forwards linear;
+}
+
+@keyframes up {
+  100% {
+    transform: translateY(-(100%/$size)*100%);
+  }
 }
