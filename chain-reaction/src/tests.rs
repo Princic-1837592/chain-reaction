@@ -87,7 +87,7 @@ fn add_atom() {
     assert_eq!(game.atoms, 1);
 
     // verifica che non si possa muovere dove è già occupato da un altro giocatore
-    assert!(game.add_atom((0, 0)).is_none());
+    assert!(game.add_atom((0, 0)).is_err());
 
     assert!(game.add_atom((4, 4)).unwrap().is_empty());
     /*
@@ -109,7 +109,7 @@ fn add_atom() {
     assert_eq!(game.atoms, 2);
 
     // verifica che non si possa muovere dove è già occupato da un altro giocatore
-    assert!(game.add_atom((4, 4)).is_none());
+    assert!(game.add_atom((4, 4)).is_err());
 
     assert_eq!(
         game.add_atom((0, 0)).unwrap(),
@@ -492,10 +492,12 @@ fn add_atom() {
 fn elimination() {
     let mut game = Game::new(3, 3, 2).unwrap();
     assert_eq!(game.turn, 0);
-    game.add_atom((0, 0));
+    assert!(game.add_atom((0, 0)).is_ok());
     assert_eq!(game.turn, 1);
-    game.add_atom((0, 1));
+    assert!(game.add_atom((0, 1)).is_ok());
     assert_eq!(game.turn, 0);
-    game.add_atom((0, 0));
+    assert!(game.add_atom((0, 0)).is_ok());
+    assert_eq!(game.turn, 0);
+    assert!(game.add_atom((0, 0)).is_err());
     assert_eq!(game.turn, 0);
 }
