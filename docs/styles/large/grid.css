@@ -1,0 +1,20 @@
+.large {
+  margin-top: min(5vh, 11vw)/2;
+}
+.large .row {
+  grid-template-columns: repeat(10, min(5vh, 11vw));
+}
+.large .cell {
+  width: min(5vh, 11vw);
+  height: min(5vh, 11vw);
+  border-left: 1px solid white;
+  border-top: 1px solid white;
+}
+.large .cell:last-child {
+  border-right: 1px solid white;
+}
+.large .row:last-child .cell {
+  border-bottom: 1px solid white;
+}
+
+/*# sourceMappingURL=grid.css.map */

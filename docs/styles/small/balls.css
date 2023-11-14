@@ -1,0 +1,36 @@
+@keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.small .ball {
+  position: absolute;
+  width: calc(min(7vh, 14vw) / 3);
+  height: calc(min(7vh, 14vw) / 3);
+  border-radius: 50%;
+  border: 2px white solid;
+}
+.small .ball-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px white solid;
+}
+.small .rotate {
+  animation: rotate 4s infinite forwards linear;
+}
+.small .ball-1-1 {
+  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 2);
+  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 2);
+}
+.small .ball-2-1 {
+  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3 * 2);
+  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3 * 2);
+}
+.small .ball-2-2 {
+  top: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3);
+  left: calc(min(7vh, 14vw) / 2 - min(7vh, 14vw) / 3 / 3);
+}
+
+/*# sourceMappingURL=balls.css.map */
