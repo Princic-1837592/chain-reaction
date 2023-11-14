@@ -58,7 +58,11 @@ function render() {
                 ballTemplate.style.backgroundColor = COLORS[board[i][j].player];
                 for (let b = 1; b <= atoms; b++) {
                     const ball = ballTemplate.cloneNode(true);
-                    ball.classList.add(`ball-${atoms}-${b}`);
+                    if (atoms <= 4) {
+                        ball.classList.add(`ball-${atoms}-${b}`);
+                    } else {
+                        ball.classList.add(`ball-any-any`);
+                    }
                     ballContainer.appendChild(ball);
                 }
                 if (atoms === 2) {

@@ -8,19 +8,18 @@ $animation-duration: 2s;
 }
 
 $size: 50%;
-$center: calc(100% / 2 - $size / 2);
+$center: 100%/2 - $size/2;
 
 .ball-container {
-  position: absolute;
   width: 100%;
   height: 100%;
 }
 
-.rotate-left {
+.rotate-right {
   animation: rotate $animation-duration infinite forwards linear;
 }
 
-.rotate-right {
+.rotate-left {
   animation: rotate $animation-duration infinite forwards linear reverse;
 }
 
@@ -42,28 +41,59 @@ $center: calc(100% / 2 - $size / 2);
 .ball-2-1 {
   top: $center - $size/3;
   left: $center;
+  z-index: 1;
 }
 
 .ball-2-2 {
   top: $center + $size/3;
   left: $center;
+  z-index: 2;
 }
 
 .ball-3-1 {
   top: $center - $size/3;
   left: $center;
-  z-index: 0;
+  z-index: 1;
 }
 
 .ball-3-2 {
   top: $center + $size/3;
   left: $center - $size/3;
-  z-index: 1;
+  z-index: 2;
 }
 
 .ball-3-3 {
   top: $center + $size/3;
   left: $center + $size/3;
+  z-index: 3;
+}
+
+.ball-4-1 {
+  top: $center - $size/3;
+  left: $center - $size/3;
+  z-index: 1;
+}
+
+.ball-4-2 {
+  top: $center - $size/3;
+  left: $center + $size/3;
   z-index: 2;
 }
 
+.ball-4-3 {
+  top: $center + $size/3;
+  left: $center - $size/3;
+  z-index: 3;
+}
+
+.ball-4-4 {
+  top: $center + $size/3;
+  left: $center + $size/3;
+  z-index: 4;
+}
+
+.ball-any-any {
+  top: $center;
+  left: $center;
+  z-index: 5;
+}
