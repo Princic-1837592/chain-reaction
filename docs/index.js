@@ -55,7 +55,7 @@ function render() {
             if (atoms > 0) {
                 const ballTemplate = document.createElement("div");
                 ballTemplate.classList.add("ball");
-                ballTemplate.style.backgroundColor = COLORS[board[i][j].player];
+                ballContainer.style.backgroundColor = COLORS[board[i][j].player];
                 for (let b = 1; b <= atoms; b++) {
                     const ball = ballTemplate.cloneNode(true);
                     if (atoms <= 4) {
@@ -147,9 +147,9 @@ async function feAddAtom() {
             for (const direction of directions) {
                 const ball = ballTemplate.cloneNode();
                 ball.classList.add(direction);
-                ball.style.backgroundColor = COLORS[turn];
                 const next = document.getElementById(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
                 next.appendChild(ball);
+                next.style.backgroundColor = COLORS[turn];
             }
         }
         await new Promise(r => setTimeout(r, 200));
