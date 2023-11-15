@@ -46,12 +46,11 @@ function initializeGrid(large) {
         }
         grid.appendChild(row);
     }
-    render();
+    const {board, turn} = JSON.parse(getState());
+    render(board, turn);
 }
 
-function render() {
-    const {atoms: _atoms, board, max_atoms: _max_atoms, players: _players, turn: turn} = JSON.parse(getState());
-    // console.log(JSON.parse(getState()));
+function render(board, turn) {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             document.getElementById(`cell-${i}-${j}`).style.borderColor = COLORS[turn];
@@ -90,64 +89,20 @@ async function feAddAtom() {
         return;
     }
     ANIMATING = true;
-    const [_id, i, j] = /cell-(\d+)-(\d+)/.exec(this.id);
+    const cellId = this.id.split("-");
+    const i = parseInt(cellId[1]);
+    const j = parseInt(cellId[2]);
     const state = JSON.parse(getState());
     const turn = state["turn"];
-    const height = state["board"].length;
-    const width = state["board"][0].length;
-    const explosions = JSON.parse(addAtom(parseInt(i), parseInt(j))) || [];
-    const near = {
-        "up": [-1, 0],
-        "right": [0, 1],
-        "down": [1, 0],
-        "left": [0, -1],
+    // const height = state["board"].length;
+    // const width = state["board"][0].length;
+    const explosions = JSON.parse(addAtom(i, j)) || [];
+    for (const {result, exploded} of explosions) {
+        render(result, turn);
+        await sleep(200);
     }
-    for (const round of explosions) {
-        for (const {coord: [i, j], atoms} of round) {
-            const balls = document.getElementById(`ball-container-${i}-${j}`);
-            for (let i = 0; i < atoms; i++) {
-                try {
-                    balls.removeChild(balls.lastChild);
-                } catch {
-                }
-            }
-            let directions = ["up", "down", "left", "right"];
-            if (i === 0) {
-                directions.splice(directions.indexOf("up"), 1);
-            } else if (i === height - 1) {
-                directions.splice(directions.indexOf("down"), 1);
-            }
-            if (j === 0) {
-                directions.splice(directions.indexOf("left"), 1);
-            } else if (i === height - 1) {
-                directions.splice(directions.indexOf("right"), 1);
-            }
-            const ballTemplate = document.createElement("div");
-            ballTemplate.classList.add("ball");
-            for (const direction of directions) {
-                const ball = ballTemplate.cloneNode();
-                ball.classList.add(direction);
-                const nextAnimator = document.getElementById(`ball-animator-${i + near[direction][0]}-${j + near[direction][1]}`);
-                const nextContainer = document.getElementById(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
-                nextAnimator.appendChild(ball);
-                nextAnimator.style.backgroundColor = COLORS[turn];
-                nextContainer.style.backgroundColor = COLORS[turn];
-            }
-        }
-        await new Promise(r => setTimeout(r, 200));
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                const container = document.getElementById(`ball-container-${i}-${j}`);
-                const animator = document.getElementById(`ball-animator-${i}-${j}`);
-                while (animator.childNodes.length > 0) {
-                    const child = animator.childNodes.item(animator.childNodes.length - 1);
-                    animator.removeChild(child);
-                    container.appendChild(child);
-                }
-            }
-        }
-    }
-    render();
+    const {board, turn: next_turn} = JSON.parse(getState());
+    render(board, next_turn);
     ANIMATING = false;
 }
 
@@ -180,9 +135,6 @@ document.getElementById("restart").addEventListener("click", feNewGame);
 document.getElementById("back-to-menu").addEventListener("click", backToMenu);
 document.getElementById("players-slider").oninput = refreshPlayersCount;
 
-function sleep(ms) {
-    console.log("slee");
-    (new Promise(resolve => setTimeout(resolve, ms)).then(_ => {
-    }));
-    console.log("sleep");
+async function sleep(ms) {
+    await new Promise(r => setTimeout(r, 200));
 }
