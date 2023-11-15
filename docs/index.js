@@ -133,5 +133,5 @@ document.getElementById("back-to-menu").addEventListener("click", backToMenu);
 document.getElementById("players-slider").oninput = refreshPlayersCount;
 
 async function sleep(ms) {
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, ms));
 }
