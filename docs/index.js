@@ -72,10 +72,12 @@ function render(board, turn) {
                 }
                 ballContainer.classList.remove("rotate-left");
                 ballContainer.classList.remove("rotate-right");
-                if (atoms === 2) {
-                    ballContainer.classList.add("rotate-left");
-                } else if (atoms === 3) {
-                    ballContainer.classList.add("rotate-right");
+                if (atoms > 1) {
+                    if (atoms % 2 === 0) {
+                        ballContainer.classList.add("rotate-left");
+                    } else {
+                        ballContainer.classList.add("rotate-right");
+                    }
                 }
             }
         }
