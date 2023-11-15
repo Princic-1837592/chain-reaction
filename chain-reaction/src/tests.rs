@@ -112,8 +112,8 @@ fn add_atom() {
     assert!(game.add_atom((4, 4)).is_err());
 
     assert_eq!(
-        game.add_atom((0, 0)).unwrap(),
-        vec![HashSet::from([(0, 0, 2).into()])]
+        game.add_atom((0, 0)).unwrap()[0].exploded,
+        HashSet::from([(0, 0)])
     );
     /*
     0 1 0 0 0
@@ -150,8 +150,8 @@ fn add_atom() {
     assert_eq!(game.atoms, 3);
 
     assert_eq!(
-        game.add_atom((4, 4)).unwrap(),
-        vec![HashSet::from([(4, 4, 2).into()])]
+        game.add_atom((4, 4)).unwrap()[0].exploded,
+        HashSet::from([(4, 4)])
     );
     /*
     0 1 0 0 0
@@ -198,8 +198,8 @@ fn add_atom() {
     */
 
     assert_eq!(
-        game.add_atom((0, 0)).unwrap(),
-        vec![HashSet::from([(0, 0, 2).into()])]
+        game.add_atom((0, 0)).unwrap()[0].exploded,
+        HashSet::from([(0, 0)])
     );
     /*
     0 2 0 0 0
@@ -236,8 +236,8 @@ fn add_atom() {
     assert_eq!(game.atoms, 7);
 
     assert_eq!(
-        game.add_atom((4, 4)).unwrap(),
-        vec![HashSet::from([(4, 4, 2).into()])]
+        game.add_atom((4, 4)).unwrap()[0].exploded,
+        HashSet::from([(4, 4)])
     );
     /*
     0 2 0 0 0
@@ -284,11 +284,15 @@ fn add_atom() {
     */
 
     assert_eq!(
-        game.add_atom((0, 0)).unwrap(),
+        game.add_atom((0, 0))
+            .unwrap()
+            .into_iter()
+            .map(|e| e.exploded)
+            .collect::<Vec<HashSet<_>>>(),
         vec![
-            HashSet::from([(0, 0, 2).into()]),
-            HashSet::from([(0, 1, 3).into(), (1, 0, 3).into()]),
-            HashSet::from([(0, 0, 2).into()])
+            HashSet::from([(0, 0)]),
+            HashSet::from([(0, 1), (1, 0)]),
+            HashSet::from([(0, 0)])
         ]
     );
     /*
@@ -350,11 +354,15 @@ fn add_atom() {
     assert_eq!(game.atoms, 11);
 
     assert_eq!(
-        game.add_atom((4, 4)).unwrap(),
+        game.add_atom((4, 4))
+            .unwrap()
+            .into_iter()
+            .map(|e| e.exploded)
+            .collect::<Vec<HashSet<_>>>(),
         vec![
-            HashSet::from([(4, 4, 2).into()]),
-            HashSet::from([(4, 3, 3).into(), (3, 4, 3).into()]),
-            HashSet::from([(4, 4, 2).into()])
+            HashSet::from([(4, 4)]),
+            HashSet::from([(4, 3), (3, 4)]),
+            HashSet::from([(4, 4)])
         ]
     );
     /*
@@ -458,15 +466,19 @@ fn add_atom() {
         .trim()
     );
     assert_eq!(
-        game.add_atom((10, 5)).unwrap(),
+        game.add_atom((10, 5))
+            .unwrap()
+            .into_iter()
+            .map(|e| e.exploded)
+            .collect::<Vec<HashSet<_>>>(),
         vec![
-            HashSet::from([(10, 5, 2).into()]),
-            HashSet::from([(10, 4, 3).into()]),
-            HashSet::from([(9, 4, 4).into(), (10, 3, 3).into()]),
-            HashSet::from([(10, 2, 3).into(), (9, 5, 3).into()]),
-            HashSet::from([(10, 1, 3).into(), (10, 5, 2).into()]),
-            HashSet::from([(9, 1, 4).into(), (10, 0, 2).into(), (10, 4, 3).into()]),
-            HashSet::from([(9, 0, 3).into()]),
+            HashSet::from([(10, 5)]),
+            HashSet::from([(10, 4)]),
+            HashSet::from([(9, 4), (10, 3)]),
+            HashSet::from([(10, 2), (9, 5)]),
+            HashSet::from([(10, 1), (10, 5)]),
+            HashSet::from([(9, 1), (10, 0), (10, 4)]),
+            HashSet::from([(9, 0)]),
         ]
     );
     assert_eq!(
