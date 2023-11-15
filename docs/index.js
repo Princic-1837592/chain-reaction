@@ -56,22 +56,17 @@ function render(board, turn) {
             document.getElementById(`cell-${i}-${j}`).style.borderColor = COLORS[turn];
             const ballContainer = document.getElementById(`ball-container-${i}-${j}`);
             ballContainer.innerHTML = "";
+            ballContainer.className = "";
             const atoms = board[i][j].atoms;
+            ballContainer.classList.add(`ball-container`);
+            ballContainer.classList.add(`ball-container-${atoms}`);
             if (atoms > 0) {
                 const ballTemplate = document.createElement("div");
                 ballTemplate.classList.add("ball");
                 ballContainer.style.backgroundColor = COLORS[board[i][j].player];
                 for (let b = 1; b <= atoms; b++) {
-                    const ball = ballTemplate.cloneNode(true);
-                    if (atoms <= 4) {
-                        ball.classList.add(`ball-${atoms}-${b}`);
-                    } else {
-                        ball.classList.add(`ball-any-any`);
-                    }
-                    ballContainer.appendChild(ball);
+                    ballContainer.appendChild(ballTemplate.cloneNode(false));
                 }
-                ballContainer.classList.remove("rotate-left");
-                ballContainer.classList.remove("rotate-right");
                 if (atoms > 1) {
                     if (atoms % 2 === 0) {
                         ballContainer.classList.add("rotate-left");
