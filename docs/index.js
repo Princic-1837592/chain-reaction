@@ -111,51 +111,27 @@ async function feAddAtom() {
                 } catch {
                 }
             }
-            let directions = [];
-            switch (atoms) {
-                case 2:
-                    if (i === 0) {
-                        directions.push("down");
-                    } else {
-                        directions.push("up");
-                    }
-                    if (j === 0) {
-                        directions.push("right");
-                    } else {
-                        directions.push("left");
-                    }
-                    break;
-                case 3:
-                    if (i === 0) {
-                        directions.push("down");
-                        directions.push("left");
-                        directions.push("right");
-                    } else if (j === 0) {
-                        directions.push("down");
-                        directions.push("right");
-                        directions.push("up");
-                    } else if (i === height - 1) {
-                        directions.push("left");
-                        directions.push("right");
-                        directions.push("up");
-                    } else {
-                        directions.push("left");
-                        directions.push("down");
-                        directions.push("up");
-                    }
-                    break;
-                case 4:
-                    directions = ["up", "down", "left", "right"];
-                    break;
+            let directions = ["up", "down", "left", "right"];
+            if (i === 0) {
+                directions.splice(directions.indexOf("up"), 1);
+            } else if (i === height - 1) {
+                directions.splice(directions.indexOf("down"), 1);
+            }
+            if (j === 0) {
+                directions.splice(directions.indexOf("left"), 1);
+            } else if (i === height - 1) {
+                directions.splice(directions.indexOf("right"), 1);
             }
             const ballTemplate = document.createElement("div");
             ballTemplate.classList.add("ball");
             for (const direction of directions) {
                 const ball = ballTemplate.cloneNode();
                 ball.classList.add(direction);
-                const next = document.getElementById(`ball-animator-${i + near[direction][0]}-${j + near[direction][1]}`);
-                next.appendChild(ball);
-                next.style.backgroundColor = COLORS[turn];
+                const nextAnimator = document.getElementById(`ball-animator-${i + near[direction][0]}-${j + near[direction][1]}`);
+                const nextContainer = document.getElementById(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
+                nextAnimator.appendChild(ball);
+                nextAnimator.style.backgroundColor = COLORS[turn];
+                nextContainer.style.backgroundColor = COLORS[turn];
             }
         }
         await new Promise(r => setTimeout(r, 200));
@@ -163,7 +139,8 @@ async function feAddAtom() {
             for (let j = 0; j < width; j++) {
                 const container = document.getElementById(`ball-container-${i}-${j}`);
                 const animator = document.getElementById(`ball-animator-${i}-${j}`);
-                for (const child of animator.childNodes) {
+                while (animator.childNodes.length > 0) {
+                    const child = animator.childNodes.item(animator.childNodes.length - 1);
                     animator.removeChild(child);
                     container.appendChild(child);
                 }
