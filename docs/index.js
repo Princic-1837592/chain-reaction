@@ -28,13 +28,19 @@ function initializeGrid(large) {
     cellTemplate.classList.add("cell");
     const ballContainerTemplate = document.createElement("div");
     ballContainerTemplate.classList.add("ball-container");
-    cellTemplate.appendChild(ballContainerTemplate);
+    const ballAnimatorTemplate = document.createElement("div");
+    ballAnimatorTemplate.classList.add("ball-animator");
     for (let i = 0; i < height; i++) {
         const row = rowTemplate.cloneNode(false);
         for (let j = 0; j < width; j++) {
-            const cell = cellTemplate.cloneNode(true);
+            const cell = cellTemplate.cloneNode(false);
             cell.id = `cell-${i}-${j}`;
-            cell.firstChild.id = `ball-container-${i}-${j}`;
+            const ballContainer = ballContainerTemplate.cloneNode(false);
+            ballContainer.id = `ball-container-${i}-${j}`;
+            cell.appendChild(ballContainer);
+            const ballAnimator = ballAnimatorTemplate.cloneNode(false);
+            ballAnimator.id = `ball-animator-${i}-${j}`;
+            cell.appendChild(ballAnimator);
             cell.addEventListener("click", feAddAtom);
             row.appendChild(cell);
         }
@@ -65,13 +71,12 @@ function render() {
                     }
                     ballContainer.appendChild(ball);
                 }
+                ballContainer.classList.remove("rotate-left");
+                ballContainer.classList.remove("rotate-right");
                 if (atoms === 2) {
                     ballContainer.classList.add("rotate-left");
                 } else if (atoms === 3) {
                     ballContainer.classList.add("rotate-right");
-                } else {
-                    ballContainer.classList.remove("rotate-left");
-                    ballContainer.classList.remove("rotate-right");
                 }
             }
         }
@@ -89,6 +94,7 @@ async function feAddAtom() {
     const state = JSON.parse(getState());
     const turn = state["turn"];
     const height = state["board"].length;
+    const width = state["board"][0].length;
     const explosions = JSON.parse(addAtom(parseInt(i), parseInt(j))) || [];
     const near = {
         "up": [-1, 0],
@@ -147,12 +153,22 @@ async function feAddAtom() {
             for (const direction of directions) {
                 const ball = ballTemplate.cloneNode();
                 ball.classList.add(direction);
-                const next = document.getElementById(`ball-container-${i + near[direction][0]}-${j + near[direction][1]}`);
+                const next = document.getElementById(`ball-animator-${i + near[direction][0]}-${j + near[direction][1]}`);
                 next.appendChild(ball);
                 next.style.backgroundColor = COLORS[turn];
             }
         }
         await new Promise(r => setTimeout(r, 200));
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                const container = document.getElementById(`ball-container-${i}-${j}`);
+                const animator = document.getElementById(`ball-animator-${i}-${j}`);
+                for (const child of animator.childNodes) {
+                    animator.removeChild(child);
+                    container.appendChild(child);
+                }
+            }
+        }
     }
     render();
     ANIMATING = false;
