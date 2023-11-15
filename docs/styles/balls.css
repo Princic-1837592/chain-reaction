@@ -25,6 +25,11 @@
   box-sizing: border-box;
 }
 
+.ball.centered {
+  top: 25%;
+  left: 25%;
+}
+
 .ball-container-1 .ball:nth-child(1) {
   top: 25%;
   left: 25%;
@@ -131,36 +136,36 @@
   animation: right 0.2s forwards linear;
 }
 
-@keyframes up {
-  from {
-    transform: translateY(200%);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
 @keyframes down {
   from {
-    transform: translateY(-200%);
-  }
-  100% {
     transform: translateY(0);
   }
-}
-@keyframes left {
-  from {
-    transform: translateX(200%);
+  to {
+    transform: translateY(200%);
   }
-  100% {
-    transform: translateX(0);
+}
+@keyframes up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-200%);
   }
 }
 @keyframes right {
   from {
-    transform: translateX(-200%);
-  }
-  100% {
     transform: translateX(0);
+  }
+  to {
+    transform: translateX(200%);
+  }
+}
+@keyframes left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-200%);
   }
 }
 

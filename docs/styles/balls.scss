@@ -30,6 +30,11 @@ $center: 100%/2 - $size/2;
   box-sizing: border-box;
 }
 
+.ball.centered {
+  top: $center;
+  left: $center;
+}
+
 .ball-container-1 .ball:nth-child(1) {
   top: $center;
   left: $center;
@@ -139,38 +144,38 @@ $duration: 0.2s;
   animation: right $duration forwards linear;
 }
 
-@keyframes up {
-  from {
-    transform: translateY((100%/$size)*100%);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
 @keyframes down {
   from {
-    transform: translateY(-(100%/$size)*100%);
-  }
-  100% {
     transform: translateY(0);
+  }
+  to {
+    transform: translateY((100%/$size)*100%);
   }
 }
 
-@keyframes left {
+@keyframes up {
   from {
-    transform: translateX((100%/$size)*100%);
+    transform: translateY(0);
   }
-  100% {
-    transform: translateX(0);
+  to {
+    transform: translateY(-(100%/$size)*100%);
   }
 }
 
 @keyframes right {
   from {
-    transform: translateX(-(100%/$size)*100%);
-  }
-  100% {
     transform: translateX(0);
+  }
+  to {
+    transform: translateX((100%/$size)*100%);
+  }
+}
+
+@keyframes left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-(100%/$size)*100%);
   }
 }

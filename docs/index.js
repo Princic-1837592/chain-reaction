@@ -1,6 +1,6 @@
 import init, {newGame, addAtom, getState} from "./pkg/frontend.js";
 
-init().then(r => {
+init().then(_r => {
 });
 
 const SMALL_WIDTH = 6, SMALL_HEIGHT = 11;
@@ -91,16 +91,58 @@ async function feAddAtom() {
     const j = parseInt(cellId[2]);
     const state = JSON.parse(getState());
     const turn = state["turn"];
-    // const height = state["board"].length;
-    // const width = state["board"][0].length;
+    const height = state["board"].length;
+    const width = state["board"][0].length;
     const explosions = JSON.parse(addAtom(i, j)) || [];
     for (const {result, exploded} of explosions) {
+        await animate(result, exploded, turn, height, width);
         render(result, turn);
-        await sleep(200);
     }
     const {board, turn: next_turn} = JSON.parse(getState());
     render(board, next_turn);
     ANIMATING = false;
+}
+
+async function animate(result, exploded, turn, height, width) {
+    for (const [i, j] of exploded) {
+        const max_atoms = result[i][j].max_atoms;
+        const container = document.getElementById(`ball-container-${i}-${j}`);
+        for (let a = 0; a < max_atoms; a++) {
+            if (container.lastChild !== null) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        let directions = [];
+        if (i > 0) {
+            directions.push("up");
+        }
+        if (i < height - 1) {
+            directions.push("down");
+        }
+        if (j > 0) {
+            directions.push("left");
+        }
+        if (j < width - 1) {
+            directions.push("right");
+        }
+        const ballTemplate = document.createElement("div");
+        ballTemplate.classList.add("ball");
+        ballTemplate.classList.add("centered");
+        ballTemplate.style.backgroundColor = COLORS[turn];
+        const animator = document.getElementById(`ball-animator-${i}-${j}`);
+        for (const direction of directions) {
+            const ball = ballTemplate.cloneNode(false);
+            ball.classList.add(direction);
+            animator.appendChild(ball);
+        }
+    }
+    await sleep(200);
+    for (const [i, j] of exploded) {
+        const animator = document.getElementById(`ball-animator-${i}-${j}`);
+        while (animator.lastChild !== null) {
+            animator.removeChild(animator.lastChild);
+        }
+    }
 }
 
 function feNewGame() {
