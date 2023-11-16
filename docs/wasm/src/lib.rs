@@ -28,3 +28,9 @@ pub fn add_atom(row: usize, column: usize) -> String {
 pub fn get_state() -> String {
     GAME.with(|game| to_string(game).unwrap())
 }
+
+#[wasm_bindgen]
+pub fn undo() -> String {
+    GAME.with(|game| game.borrow_mut().undo());
+    get_state()
+}

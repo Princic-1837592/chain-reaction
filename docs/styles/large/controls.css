@@ -1,26 +1,5 @@
-#controls {
-  margin-top: 50px;
-  display: grid;
-  grid-auto-flow: column;
-}
-
-#controls > div {
-  display: inline-block;
-}
-
-#controls div label {
-  display: inline-block;
-  width: 100%;
-  margin: auto;
-  text-align: center;
-}
-
 #controls label.symbol {
   font-size: min(5vh, 11vw);
-}
-
-#controls label.name {
-  font-size: 30px;
 }
 
 /*# sourceMappingURL=controls.css.map */

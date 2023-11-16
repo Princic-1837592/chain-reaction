@@ -1,4 +1,4 @@
-import init, {newGame, addAtom, getState} from "./pkg/frontend.js";
+import init, {newGame, addAtom, getState, undo} from "./pkg/frontend.js";
 
 init().then(_r => {
 });
@@ -163,13 +163,18 @@ function backToMenu() {
     menu.classList.remove("invisible");
 }
 
+function feUndo() {
+    const {board, turn} = JSON.parse(undo());
+    render(board, turn);
+}
+
 function refreshPlayersCount() {
     document.getElementById("players-value").innerText = this.value;
 }
 
 
 document.getElementById("start-button").addEventListener("click", feNewGame);
-// document.getElementById("undo").addEventListener("click", feUndo);
+document.getElementById("undo").addEventListener("click", feUndo);
 document.getElementById("restart").addEventListener("click", feNewGame);
 document.getElementById("back-to-menu").addEventListener("click", backToMenu);
 document.getElementById("players-slider").oninput = refreshPlayersCount;

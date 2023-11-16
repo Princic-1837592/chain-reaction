@@ -15,6 +15,10 @@ export function addAtom(row: number, column: number): string;
 * @returns {string}
 */
 export function getState(): string;
+/**
+* @returns {string}
+*/
+export function undo(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -23,6 +27,7 @@ export interface InitOutput {
   readonly newGame: (a: number, b: number) => void;
   readonly addAtom: (a: number, b: number, c: number) => void;
   readonly getState: (a: number) => void;
+  readonly undo: (a: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
 }
