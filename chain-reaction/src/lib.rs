@@ -107,13 +107,10 @@ impl Game {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
         if is_horizontal_edge && is_vertical_edge {
-            // angolo
             2
         } else if is_horizontal_edge || is_vertical_edge {
-            // bordo
             3
         } else {
-            // centro
             4
         }
     }
