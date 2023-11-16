@@ -14,24 +14,29 @@ mod tests;
 pub struct Game {
     board: Vec<Vec<Cell>>,
     players: Vec<Player>,
+    num_players: u16,
     turn: usize,
-    atoms: u32,
-    max_atoms: u32,
+    // il massimo numero è dato dalla formula 4 + 2 * ((H - 2) * 2 + (W - 2) * 2) + 3 * ((H - 2) * (W - 2))
+    // dove H e W sono rispettivamente l'altezza e la larghezza massime della scacchiera, ovvero 18 e 10
+    // il risultato è 484, per il quale servono 9 bit
+    max_atoms: u16,
+    // potrebbe essere u8 ma per evitare conversioni inutili va bene u16
+    atoms: u16,
     won: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Cell {
-    atoms: u32,
+    atoms: u8,
     player: usize,
-    max_atoms: u32,
+    max_atoms: u8,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 struct Player {
-    atoms: u32,
+    atoms: u16,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -39,7 +44,6 @@ struct Player {
 pub enum Error {
     Occupied,
     GameWon,
-    BoardFull,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -63,10 +67,11 @@ impl Game {
                 cell.max_atoms = Self::max_atoms((r, c), height, width);
             }
         }
-        let (height, width) = (height as u32, width as u32);
+        let (height, width) = (height as u16, width as u16);
         Some(Self {
             board,
             players: vec![Player::default(); players],
+            num_players: players as u16,
             turn: 0,
             atoms: 0,
             max_atoms: 4
@@ -84,7 +89,7 @@ impl Game {
         Self::new(18, 10, players).unwrap()
     }
 
-    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u32 {
+    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u8 {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
         if is_horizontal_edge && is_vertical_edge {
@@ -106,7 +111,7 @@ impl Game {
             // se ci sono meno atomi del numero di giocatori significa che nessuno può essere stato
             // eliminato quindi si può passare al turno successivo
             // se invece il giocatore successivo non è stato eliminato tocca a lui
-            if self.atoms <= self.players.len() as u32 || self.players[self.turn].atoms > 0 {
+            if self.atoms <= self.num_players || self.players[self.turn].atoms > 0 {
                 break;
             }
         }
@@ -123,10 +128,6 @@ impl Game {
         // se la cella è già occupata
         if cell.atoms != 0 && cell.player != self.turn {
             return Err(Error::Occupied);
-        }
-        // se la scacchiera è piena si andrebbe in un loop infinito
-        if self.atoms == self.max_atoms {
-            return Err(Error::BoardFull);
         }
         cell.player = self.turn;
         cell.atoms += 1;
@@ -176,8 +177,8 @@ impl Game {
                     if next_row < self.board.len() && next_col < self.board[0].len() {
                         let next_cell = &mut self.board[next_row][next_col];
                         if next_cell.atoms != 0 && next_cell.player != self.turn {
-                            self.players[next_cell.player].atoms -= next_cell.atoms;
-                            self.players[self.turn].atoms += next_cell.atoms;
+                            self.players[next_cell.player].atoms -= next_cell.atoms as u16;
+                            self.players[self.turn].atoms += next_cell.atoms as u16;
                         }
                         next_cell.player = self.turn;
                         next_cell.atoms += 1;
