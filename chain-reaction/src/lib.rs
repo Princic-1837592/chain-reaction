@@ -23,6 +23,8 @@ pub struct Game {
     // potrebbe essere u8 ma per evitare conversioni inutili va bene u16
     atoms: u16,
     won: bool,
+    #[serde(skip)]
+    history: Vec<History>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -53,6 +55,17 @@ pub struct Explosion {
     exploded: HashSet<Coord>,
 }
 
+#[derive(Clone, Debug)]
+struct History {
+    board: Vec<Vec<Cell>>,
+    players: Vec<Player>,
+    // num_players: u16, // costante
+    turn: usize,
+    // max_atoms: u16, // costante
+    atoms: u16,
+    // won: bool, // impossibile che uno stato precedente sia già vinto
+}
+
 type Coord = (usize, usize);
 
 impl Game {
@@ -78,6 +91,7 @@ impl Game {
                 + 2 * ((height - 2) * 2 + (width - 2) * 2)
                 + 3 * ((height - 2) * (width - 2)),
             won: false,
+            history: vec![],
         })
     }
 
@@ -124,11 +138,18 @@ impl Game {
         if self.won {
             return Err(Error::GameWon);
         }
-        let cell = &mut self.board[row][col];
+        let cell = self.board[row][col];
         // se la cella è già occupata
         if cell.atoms != 0 && cell.player != self.turn {
             return Err(Error::Occupied);
         }
+        self.history.push(History {
+            board: self.board.clone(),
+            players: self.players.clone(),
+            turn: self.turn,
+            atoms: self.atoms,
+        });
+        let cell = &mut self.board[row][col];
         cell.player = self.turn;
         cell.atoms += 1;
         self.atoms += 1;
@@ -194,6 +215,19 @@ impl Game {
             self.won = true;
         }
         result
+    }
+
+    pub fn undo(&mut self) -> bool {
+        if let Some(history) = self.history.pop() {
+            self.board = history.board;
+            self.players = history.players;
+            self.turn = history.turn;
+            self.atoms = history.atoms;
+            self.won = false;
+            true
+        } else {
+            false
+        }
     }
 }
 
