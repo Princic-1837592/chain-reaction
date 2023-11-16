@@ -14,24 +14,31 @@ mod tests;
 pub struct Game {
     board: Vec<Vec<Cell>>,
     players: Vec<Player>,
+    num_players: u16,
     turn: usize,
-    atoms: u32,
-    max_atoms: u32,
+    // il massimo numero è dato dalla formula 4 + 2 * ((H - 2) * 2 + (W - 2) * 2) + 3 * ((H - 2) * (W - 2))
+    // dove H e W sono rispettivamente l'altezza e la larghezza massime della scacchiera, ovvero 18 e 10
+    // il risultato è 484, per il quale servono 9 bit
+    max_atoms: u16,
+    // potrebbe essere u8 ma per evitare conversioni inutili va bene u16
+    atoms: u16,
     won: bool,
+    #[serde(skip)]
+    history: Vec<History>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Cell {
-    atoms: u32,
+    atoms: u8,
     player: usize,
-    max_atoms: u32,
+    max_atoms: u8,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 struct Player {
-    atoms: u32,
+    atoms: u16,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -39,7 +46,6 @@ struct Player {
 pub enum Error {
     Occupied,
     GameWon,
-    BoardFull,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -47,6 +53,17 @@ pub enum Error {
 pub struct Explosion {
     result: Vec<Vec<Cell>>,
     exploded: HashSet<Coord>,
+}
+
+#[derive(Clone, Debug)]
+struct History {
+    board: Vec<Vec<Cell>>,
+    players: Vec<Player>,
+    // num_players: u16, // costante
+    turn: usize,
+    // max_atoms: u16, // costante
+    atoms: u16,
+    // won: bool, // impossibile che uno stato precedente sia già vinto
 }
 
 type Coord = (usize, usize);
@@ -63,16 +80,18 @@ impl Game {
                 cell.max_atoms = Self::max_atoms((r, c), height, width);
             }
         }
-        let (height, width) = (height as u32, width as u32);
+        let (height, width) = (height as u16, width as u16);
         Some(Self {
             board,
             players: vec![Player::default(); players],
+            num_players: players as u16,
             turn: 0,
             atoms: 0,
             max_atoms: 4
                 + 2 * ((height - 2) * 2 + (width - 2) * 2)
                 + 3 * ((height - 2) * (width - 2)),
             won: false,
+            history: vec![],
         })
     }
 
@@ -84,17 +103,14 @@ impl Game {
         Self::new(18, 10, players).unwrap()
     }
 
-    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u32 {
+    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u8 {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
         if is_horizontal_edge && is_vertical_edge {
-            // angolo
             2
         } else if is_horizontal_edge || is_vertical_edge {
-            // bordo
             3
         } else {
-            // centro
             4
         }
     }
@@ -106,7 +122,7 @@ impl Game {
             // se ci sono meno atomi del numero di giocatori significa che nessuno può essere stato
             // eliminato quindi si può passare al turno successivo
             // se invece il giocatore successivo non è stato eliminato tocca a lui
-            if self.atoms <= self.players.len() as u32 || self.players[self.turn].atoms > 0 {
+            if self.atoms <= self.num_players || self.players[self.turn].atoms > 0 {
                 break;
             }
         }
@@ -119,15 +135,18 @@ impl Game {
         if self.won {
             return Err(Error::GameWon);
         }
-        let cell = &mut self.board[row][col];
+        let cell = self.board[row][col];
         // se la cella è già occupata
         if cell.atoms != 0 && cell.player != self.turn {
             return Err(Error::Occupied);
         }
-        // se la scacchiera è piena si andrebbe in un loop infinito
-        if self.atoms == self.max_atoms {
-            return Err(Error::BoardFull);
-        }
+        self.history.push(History {
+            board: self.board.clone(),
+            players: self.players.clone(),
+            turn: self.turn,
+            atoms: self.atoms,
+        });
+        let cell = &mut self.board[row][col];
         cell.player = self.turn;
         cell.atoms += 1;
         self.atoms += 1;
@@ -176,8 +195,8 @@ impl Game {
                     if next_row < self.board.len() && next_col < self.board[0].len() {
                         let next_cell = &mut self.board[next_row][next_col];
                         if next_cell.atoms != 0 && next_cell.player != self.turn {
-                            self.players[next_cell.player].atoms -= next_cell.atoms;
-                            self.players[self.turn].atoms += next_cell.atoms;
+                            self.players[next_cell.player].atoms -= next_cell.atoms as u16;
+                            self.players[self.turn].atoms += next_cell.atoms as u16;
                         }
                         next_cell.player = self.turn;
                         next_cell.atoms += 1;
@@ -193,6 +212,19 @@ impl Game {
             self.won = true;
         }
         result
+    }
+
+    pub fn undo(&mut self) -> bool {
+        if let Some(history) = self.history.pop() {
+            self.board = history.board;
+            self.players = history.players;
+            self.turn = history.turn;
+            self.atoms = history.atoms;
+            self.won = false;
+            true
+        } else {
+            false
+        }
     }
 }
 
