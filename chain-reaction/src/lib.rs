@@ -3,9 +3,11 @@ use std::{
     fmt::Display,
 };
 
+use cell::Cell;
 #[cfg(feature = "serde")]
 use serde::Serialize;
 
+mod cell;
 #[cfg(test)]
 mod tests;
 
@@ -20,14 +22,6 @@ pub struct Game {
     won: bool,
     #[cfg_attr(feature = "serde", serde(skip))]
     history: Vec<History>,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
-pub struct Cell {
-    atoms: u8,
-    player: usize,
-    max_atoms: u8,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -68,14 +62,14 @@ impl Game {
         {
             return None;
         }
-        let mut board = vec![vec![Cell::default(); width]; height];
-        for (r, row) in board.iter_mut().enumerate() {
-            for (c, cell) in row.iter_mut().enumerate() {
-                cell.max_atoms = Self::max_atoms((r, c), height, width);
-            }
-        }
         Some(Self {
-            board,
+            board: (0..height)
+                .map(|row| {
+                    (0..width)
+                        .map(|col| Cell::new((row, col), height, width))
+                        .collect()
+                })
+                .collect(),
             players: vec![Player::default(); players],
             num_players: players as u16,
             turn: 0,
@@ -91,18 +85,6 @@ impl Game {
 
     pub fn large(players: usize) -> Self {
         Self::new(18, 10, players).unwrap()
-    }
-
-    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u8 {
-        let is_horizontal_edge = row == 0 || row == height - 1;
-        let is_vertical_edge = col == 0 || col == width - 1;
-        if is_horizontal_edge && is_vertical_edge {
-            2
-        } else if is_horizontal_edge || is_vertical_edge {
-            3
-        } else {
-            4
-        }
     }
 
     fn next_turn(&mut self) {
@@ -127,7 +109,7 @@ impl Game {
         }
         let cell = self.board[row][col];
         // se la cella è già occupata
-        if cell.atoms != 0 && cell.player != self.turn {
+        if cell.atoms() != 0 && cell.player() != self.turn {
             return Err(Error::Occupied);
         }
         self.history.push(History {
@@ -137,8 +119,8 @@ impl Game {
             atoms: self.atoms,
         });
         let cell = &mut self.board[row][col];
-        cell.player = self.turn;
-        cell.atoms += 1;
+        cell.set_player(self.turn);
+        cell.add_atom();
         self.atoms += 1;
         self.players[self.turn].atoms += 1;
         let result = if cell.must_explode() {
@@ -172,10 +154,7 @@ impl Game {
                     exploded[row][col] = true;
                     exploded_count_down -= 1;
                 }
-                cell.atoms -= cell.max_atoms;
-                if cell.atoms == 0 {
-                    cell.player = usize::MAX;
-                }
+                cell.explode();
                 for next @ (next_row, next_col) in [
                     (row.wrapping_sub(1), col),
                     (row + 1, col),
@@ -184,12 +163,12 @@ impl Game {
                 ] {
                     if next_row < self.board.len() && next_col < self.board[0].len() {
                         let next_cell = &mut self.board[next_row][next_col];
-                        if next_cell.atoms != 0 && next_cell.player != self.turn {
-                            self.players[next_cell.player].atoms -= next_cell.atoms as u16;
-                            self.players[self.turn].atoms += next_cell.atoms as u16;
+                        if next_cell.atoms() != 0 && next_cell.player() != self.turn {
+                            self.players[next_cell.player()].atoms -= next_cell.atoms() as u16;
+                            self.players[self.turn].atoms += next_cell.atoms() as u16;
                         }
-                        next_cell.player = self.turn;
-                        next_cell.atoms += 1;
+                        next_cell.set_player(self.turn);
+                        next_cell.add_atom();
                         if next_cell.must_explode() {
                             to_explode.push_back(next);
                         }
@@ -218,12 +197,6 @@ impl Game {
     }
 }
 
-impl Cell {
-    const fn must_explode(&self) -> bool {
-        self.atoms >= self.max_atoms
-    }
-}
-
 impl Explosion {
     fn new(result: Vec<Vec<Cell>>, exploded: HashSet<Coord>) -> Self {
         Self { result, exploded }
@@ -236,22 +209,12 @@ impl Default for Game {
     }
 }
 
-impl Default for Cell {
-    fn default() -> Self {
-        Self {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 0,
-        }
-    }
-}
-
 impl Display for Game {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut result = String::new();
         for row in &self.board {
             for cell in row {
-                result.push_str(&format!("{} ", cell.atoms));
+                result.push_str(&format!("{} ", cell.atoms()));
             }
             result.pop();
             result.push('\n');
