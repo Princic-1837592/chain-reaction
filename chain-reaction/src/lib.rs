@@ -16,11 +16,6 @@ pub struct Game {
     players: Vec<Player>,
     num_players: u16,
     turn: usize,
-    // il massimo numero è dato dalla formula 4 + 2 * ((H - 2) * 2 + (W - 2) * 2) + 3 * ((H - 2) * (W - 2))
-    // dove H e W sono rispettivamente l'altezza e la larghezza massime della scacchiera, ovvero 18 e 10
-    // il risultato è 484, per il quale servono 9 bit
-    max_atoms: u16,
-    // potrebbe essere u8 ma per evitare conversioni inutili va bene u16
     atoms: u16,
     won: bool,
     #[serde(skip)]
@@ -61,7 +56,6 @@ struct History {
     players: Vec<Player>,
     // num_players: u16, // costante
     turn: usize,
-    // max_atoms: u16, // costante
     atoms: u16,
     // won: bool, // impossibile che uno stato precedente sia già vinto
 }
@@ -80,16 +74,12 @@ impl Game {
                 cell.max_atoms = Self::max_atoms((r, c), height, width);
             }
         }
-        let (height, width) = (height as u16, width as u16);
         Some(Self {
             board,
             players: vec![Player::default(); players],
             num_players: players as u16,
             turn: 0,
             atoms: 0,
-            max_atoms: 4
-                + 2 * ((height - 2) * 2 + (width - 2) * 2)
-                + 3 * ((height - 2) * (width - 2)),
             won: false,
             history: vec![],
         })
