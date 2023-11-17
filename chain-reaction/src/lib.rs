@@ -18,7 +18,7 @@ pub struct Game {
     turn: usize,
     atoms: u16,
     won: bool,
-    #[serde(skip)]
+    #[cfg_attr(feature = "serde", serde(skip))]
     history: Vec<History>,
 }
 
