@@ -5,9 +5,9 @@ use std::{
 
 use cell::Cell;
 #[cfg(feature = "serde")]
-use serde::Serialize;
+use serde::ser::SerializeMap;
 #[cfg(feature = "serde")]
-use serde_json::{json, Value};
+use serde::Serialize;
 
 mod cell;
 #[cfg(test)]
@@ -33,14 +33,14 @@ struct Player {
     atoms: u16,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub enum Error {
     Occupied,
     GameWon,
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Explosion {
     result: Vec<Cell>,
@@ -242,16 +242,16 @@ impl Display for Game {
 #[cfg(feature = "serde")]
 impl Serialize for Game {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut value = json!({
-            "height": self.height,
-            "width": self.width,
-            "players": self.players,
-            "turn": self.turn,
-            "atoms": self.atoms,
-            "won": self.won,
-        });
-        value["board"] = Value::from(
-            (0..self.height)
+        let mut game = serializer.serialize_map(Some(7))?;
+        game.serialize_entry("height", &self.height)?;
+        game.serialize_entry("width", &self.width)?;
+        game.serialize_entry("players", &self.players)?;
+        game.serialize_entry("turn", &self.turn)?;
+        game.serialize_entry("atoms", &self.atoms)?;
+        game.serialize_entry("won", &self.won)?;
+        game.serialize_entry(
+            "board",
+            &(0..self.height)
                 .map(|row| {
                     (0..self.width)
                         .map(|col| {
@@ -260,7 +260,7 @@ impl Serialize for Game {
                         .collect::<Vec<_>>()
                 })
                 .collect::<Vec<_>>(),
-        );
-        value.serialize(serializer)
+        )?;
+        game.end()
     }
 }
