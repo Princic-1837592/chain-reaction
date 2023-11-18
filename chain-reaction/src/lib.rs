@@ -6,23 +6,24 @@ use std::{
 use cell::Cell;
 #[cfg(feature = "serde")]
 use serde::Serialize;
+#[cfg(feature = "serde")]
+use serde_json::{json, Value};
 
 mod cell;
 #[cfg(test)]
 mod tests;
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Game {
     board: Vec<Cell>,
-    _height: usize,
+    #[cfg_attr(not(feature = "serde"), allow(dead_code))]
+    height: usize,
     width: usize,
     players: Vec<Player>,
     num_players: u16,
     turn: usize,
     atoms: u16,
     won: bool,
-    #[cfg_attr(feature = "serde", serde(skip))]
     history: Vec<History>,
 }
 
@@ -68,7 +69,7 @@ impl Game {
             board: (0..height)
                 .flat_map(|row| (0..width).map(move |col| Cell::new((row, col), height, width)))
                 .collect(),
-            _height: height,
+            height,
             width,
             players: vec![Player::default(); players],
             num_players: players as u16,
@@ -235,5 +236,31 @@ impl Display for Game {
         }
         result.pop();
         write!(f, "{}", result)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Game {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut value = json!({
+            "height": self.height,
+            "width": self.width,
+            "players": self.players,
+            "turn": self.turn,
+            "atoms": self.atoms,
+            "won": self.won,
+        });
+        value["board"] = Value::from(
+            (0..self.height)
+                .map(|row| {
+                    (0..self.width)
+                        .map(|col| {
+                            serde_json::to_value(self.board[row * self.width + col]).unwrap()
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>(),
+        );
+        value.serialize(serializer)
     }
 }

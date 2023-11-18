@@ -1,10 +1,11 @@
 #[cfg(feature = "serde")]
 use serde::Serialize;
+#[cfg(feature = "serde")]
+use serde_json::json;
 
 use crate::Coord;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Cell {
     // una cella vuota non viene più riconosciuta dal player invalido ma da atoms == 0
     //
@@ -68,5 +69,17 @@ impl Cell {
 
     pub(crate) fn explode(&mut self) {
         self.value -= self.max_atoms();
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Cell {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        json!({
+            "atoms": self.atoms(),
+            "max_atoms": self.max_atoms(),
+            "player": self.player(),
+        })
+        .serialize(serializer)
     }
 }

@@ -323,3 +323,92 @@ fn elimination() {
     assert!(game.add_atom((0, 0)).is_err());
     assert_eq!(game.turn, 0);
 }
+
+#[cfg(feature = "serde")]
+#[test]
+fn json() {
+    use std::str::FromStr;
+
+    use serde_json::Value;
+
+    let game = Game::new(3, 3, 2).unwrap();
+    assert_eq!(
+        Value::from_str(
+            r#"{
+  "board": [
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}],
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}]
+  ],
+  "height": 3,
+  "width": 3,
+  "players":[{"atoms":0},{"atoms":0}],
+  "turn": 0,
+  "atoms": 0,
+  "won": false
+}"#
+        )
+        .unwrap(),
+        serde_json::to_value(game).unwrap()
+    );
+    let game = Game::small(2);
+    assert_eq!(
+        Value::from_str(
+            r#"{
+  "atoms": 0,
+  "board": [
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}]
+  ],
+  "height": 11,
+  "width": 6,
+  "players":[{"atoms":0},{"atoms":0}],
+  "turn": 0,
+  "won": false
+}"#,
+        )
+        .unwrap(),
+        serde_json::to_value(game).unwrap(),
+    );
+}
