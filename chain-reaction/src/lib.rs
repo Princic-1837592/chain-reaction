@@ -14,7 +14,9 @@ mod tests;
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Game {
-    board: Vec<Vec<Cell>>,
+    board: Vec<Cell>,
+    _height: usize,
+    width: usize,
     players: Vec<Player>,
     num_players: u16,
     turn: usize,
@@ -40,13 +42,13 @@ pub enum Error {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Explosion {
-    result: Vec<Vec<Cell>>,
+    result: Vec<Cell>,
     exploded: HashSet<Coord>,
 }
 
 #[derive(Clone, Debug)]
 struct History {
-    board: Vec<Vec<Cell>>,
+    board: Vec<Cell>,
     players: Vec<Player>,
     // num_players: u16, // costante
     turn: usize,
@@ -64,12 +66,10 @@ impl Game {
         }
         Some(Self {
             board: (0..height)
-                .map(|row| {
-                    (0..width)
-                        .map(|col| Cell::new((row, col), height, width))
-                        .collect()
-                })
+                .flat_map(|row| (0..width).map(move |col| Cell::new((row, col), height, width)))
                 .collect(),
+            _height: height,
+            width,
             players: vec![Player::default(); players],
             num_players: players as u16,
             turn: 0,
@@ -107,7 +107,8 @@ impl Game {
         if self.won {
             return Err(Error::GameWon);
         }
-        let cell = self.board[row][col];
+        let index = row * self.width + col;
+        let cell = self.board[index];
         // se la cella è già occupata
         if cell.atoms() != 0 && cell.player() != self.turn {
             return Err(Error::Occupied);
@@ -118,7 +119,7 @@ impl Game {
             turn: self.turn,
             atoms: self.atoms,
         });
-        let cell = &mut self.board[row][col];
+        let cell = &mut self.board[index];
         cell.set_player(self.turn);
         cell.add_atom();
         self.atoms += 1;
@@ -132,37 +133,46 @@ impl Game {
         Ok(result)
     }
 
-    fn explode(&mut self, coord @ (row, col): Coord) -> Vec<Explosion> {
+    fn explode(&mut self, (row, col): Coord) -> Vec<Explosion> {
         let mut result = vec![];
-        if !self.board[row][col].must_explode() {
+        let index = row * self.width + col;
+        if !self.board[index].must_explode() {
             return result;
         }
-        let mut exploded = vec![vec![false; self.board[0].len()]; self.board.len()];
-        let mut exploded_count_down = self.board.len() * self.board[0].len();
-        let mut to_explode = VecDeque::from([coord]);
+        let mut exploded = vec![false; self.board.len()];
+        let mut exploded_count_down = self.board.len();
+        let mut to_explode = VecDeque::from([index]);
         while !to_explode.is_empty() && exploded_count_down > 0 {
             let mut round = HashSet::new();
             for _ in 0..to_explode.len() {
-                let coord @ (row, col) = to_explode.pop_front().unwrap();
-                let cell = &mut self.board[row][col];
+                let index = to_explode.pop_front().unwrap();
+                let cell = &mut self.board[index];
                 // se la cella ha subito più di un'esplosione nello stesso round
                 if !cell.must_explode() {
                     continue;
                 }
-                round.insert(coord);
-                if !exploded[row][col] {
-                    exploded[row][col] = true;
+                round.insert((index / self.width, index % self.width));
+                if !exploded[index] {
+                    exploded[index] = true;
                     exploded_count_down -= 1;
                 }
                 cell.explode();
-                for next @ (next_row, next_col) in [
-                    (row.wrapping_sub(1), col),
-                    (row + 1, col),
-                    (row, col.wrapping_sub(1)),
-                    (row, col + 1),
+                for next in [
+                    index.wrapping_sub(self.width),
+                    index + self.width,
+                    if index % self.width == 0 {
+                        usize::MAX
+                    } else {
+                        index - 1
+                    },
+                    if index % self.width == self.width - 1 {
+                        usize::MAX
+                    } else {
+                        index + 1
+                    },
                 ] {
-                    if next_row < self.board.len() && next_col < self.board[0].len() {
-                        let next_cell = &mut self.board[next_row][next_col];
+                    if next < self.board.len() {
+                        let next_cell = &mut self.board[next];
                         if next_cell.atoms() != 0 && next_cell.player() != self.turn {
                             self.players[next_cell.player()].atoms -= next_cell.atoms() as u16;
                             self.players[self.turn].atoms += next_cell.atoms() as u16;
@@ -195,10 +205,14 @@ impl Game {
             false
         }
     }
+
+    pub fn get(&self, (row, col): Coord) -> Cell {
+        self.board[row * self.width + col]
+    }
 }
 
 impl Explosion {
-    fn new(result: Vec<Vec<Cell>>, exploded: HashSet<Coord>) -> Self {
+    fn new(result: Vec<Cell>, exploded: HashSet<Coord>) -> Self {
         Self { result, exploded }
     }
 }
@@ -212,12 +226,12 @@ impl Default for Game {
 impl Display for Game {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut result = String::new();
-        for row in &self.board {
-            for cell in row {
-                result.push_str(&format!("{} ", cell.atoms()));
+        for (i, cell) in self.board.iter().enumerate() {
+            result.push_str(&format!("{} ", cell.atoms()));
+            if i % self.width == self.width - 1 {
+                result.pop();
+                result.push('\n');
             }
-            result.pop();
-            result.push('\n');
         }
         result.pop();
         write!(f, "{}", result)

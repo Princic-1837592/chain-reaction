@@ -5,7 +5,7 @@ use crate::Coord;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
-pub(crate) struct Cell {
+pub struct Cell {
     // una cella vuota non viene più riconosciuta dal player invalido ma da atoms == 0
     //
     // una cella contiene massimo 5 atomi (3 bit)
@@ -20,7 +20,7 @@ pub(crate) struct Cell {
 }
 
 impl Cell {
-    pub fn new((row, col): Coord, height: usize, width: usize) -> Self {
+    pub(crate) fn new((row, col): Coord, height: usize, width: usize) -> Self {
         let is_horizontal_edge = row == 0 || row == height - 1;
         let is_vertical_edge = col == 0 || col == width - 1;
         let max_atoms = if is_horizontal_edge && is_vertical_edge {
@@ -46,7 +46,7 @@ impl Cell {
         self.value & 0b00000111
     }
 
-    pub fn add_atom(&mut self) {
+    pub(crate) fn add_atom(&mut self) {
         self.value += 1;
     }
 
@@ -58,7 +58,7 @@ impl Cell {
         ((self.value & 0b11100000) >> 5) as usize
     }
 
-    pub fn set_player(&mut self, player: usize) {
+    pub(crate) fn set_player(&mut self, player: usize) {
         self.value = (self.value & 0b00011111) | ((player as u8) << 5);
     }
 
@@ -66,7 +66,7 @@ impl Cell {
         self.atoms() >= self.max_atoms()
     }
 
-    pub fn explode(&mut self) {
+    pub(crate) fn explode(&mut self) {
         self.value -= self.max_atoms();
     }
 }
