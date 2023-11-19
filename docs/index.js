@@ -91,8 +91,8 @@ async function feAddAtom() {
     const j = parseInt(cellId[2]);
     const state = JSON.parse(getState());
     const turn = state["turn"];
-    const height = state["board"].length;
-    const width = state["board"][0].length;
+    const height = state.height;
+    const width = state.width;
     const explosions = JSON.parse(addAtom(i, j)) || [];
     for (const {result, exploded} of explosions) {
         await animate(result, exploded, turn, height, width);
