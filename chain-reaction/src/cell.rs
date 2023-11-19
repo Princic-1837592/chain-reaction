@@ -1,9 +1,12 @@
+#[cfg(feature = "deepsize")]
+use deepsize::DeepSizeOf;
 #[cfg(feature = "serde")]
 use serde::{ser::SerializeMap, Serialize};
 
 use crate::Coord;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 pub struct Cell {
     // una cella vuota non viene più riconosciuta dal player fuori range ma da atoms == 0
     //

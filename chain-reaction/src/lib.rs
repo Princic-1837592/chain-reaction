@@ -4,6 +4,8 @@ use std::{
 };
 
 use cell::Cell;
+#[cfg(feature = "deepsize")]
+use deepsize::DeepSizeOf;
 #[cfg(feature = "serde")]
 use serde::{ser::SerializeMap, Serialize};
 
@@ -12,6 +14,7 @@ mod cell;
 mod tests;
 
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 pub struct Game {
     board: Vec<Cell>,
     height: usize,
@@ -26,6 +29,7 @@ pub struct Game {
 
 #[derive(Copy, Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 struct Player {
     atoms: u16,
 }
@@ -45,6 +49,7 @@ pub struct Explosion {
 }
 
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 struct History {
     board: Vec<Cell>,
     players: Vec<Player>,
