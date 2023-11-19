@@ -331,7 +331,7 @@ fn json() {
 
     use serde_json::Value;
 
-    let game = Game::new(3, 3, 2).unwrap();
+    let mut game = Game::new(3, 3, 2).unwrap();
     assert_eq!(
         Value::from_str(
             r#"{
@@ -349,8 +349,28 @@ fn json() {
 }"#
         )
         .unwrap(),
-        serde_json::to_value(game).unwrap()
+        serde_json::to_value(&game).unwrap()
     );
+
+    game.add_atom((0, 0)).ok();
+    game.add_atom((0, 1)).ok();
+    assert_eq!(
+        Value::from_str(
+            r#"[
+  {
+    "result": [
+      [{"atoms":0,"max_atoms":2,"player":0},{"atoms":2,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}],
+      [{"atoms":1,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+      [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}]
+    ],
+    "exploded":[[0,0]]
+  }
+]"#
+        )
+        .unwrap(),
+        serde_json::to_value(&game.add_atom((0, 0)).unwrap()).unwrap()
+    );
+
     let game = Game::small(2);
     assert_eq!(
         Value::from_str(

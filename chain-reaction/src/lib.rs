@@ -42,10 +42,10 @@ pub enum Error {
 }
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Explosion {
     pub result: Vec<Cell>,
     pub exploded: HashSet<Coord>,
+    width: usize,
 }
 
 #[derive(Clone, Debug)]
@@ -185,7 +185,7 @@ impl Game {
                     }
                 }
             }
-            result.push(Explosion::new(self.board.clone(), round));
+            result.push(Explosion::new(self.board.clone(), round, self.width));
         }
         if exploded_count_down == 0 {
             self.won = true;
@@ -220,8 +220,12 @@ impl Game {
 }
 
 impl Explosion {
-    fn new(result: Vec<Cell>, exploded: HashSet<Coord>) -> Self {
-        Self { result, exploded }
+    fn new(result: Vec<Cell>, exploded: HashSet<Coord>, width: usize) -> Self {
+        Self {
+            result,
+            exploded,
+            width,
+        }
     }
 }
 
@@ -269,5 +273,27 @@ impl Serialize for Game {
                 .collect::<Vec<_>>(),
         )?;
         game.end()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Explosion {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let height = self.result.len() / self.width;
+        let mut explosion = serializer.serialize_map(Some(2))?;
+        explosion.serialize_entry(
+            "result",
+            &(0..height)
+                .map(|row| {
+                    (0..self.width)
+                        .map(|col| {
+                            serde_json::to_value(self.result[row * self.width + col]).unwrap()
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>(),
+        )?;
+        explosion.serialize_entry("exploded", &self.exploded)?;
+        explosion.end()
     }
 }
