@@ -1,17 +1,15 @@
 #[cfg(feature = "serde")]
-use serde::Serialize;
-#[cfg(feature = "serde")]
-use serde_json::json;
+use serde::{ser::SerializeMap, Serialize};
 
 use crate::Coord;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
 pub struct Cell {
-    // una cella vuota non viene più riconosciuta dal player invalido ma da atoms == 0
+    // una cella vuota non viene più riconosciuta dal player fuori range ma da atoms == 0
     //
     // una cella contiene massimo 5 atomi (3 bit)
     //
-    // gli unici valori ammissibili sono 2, 3 e 4
+    // gli unici valori ammissibili per `max_atoms` sono 2, 3 e 4
     // per risparmiare un bit scalo tutto di 2 (0, 1 e 2)
     //
     // giocatori massimi 8, quindi indici arrivano fino a 7 e bastano 3 bit
@@ -75,11 +73,10 @@ impl Cell {
 #[cfg(feature = "serde")]
 impl Serialize for Cell {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        json!({
-            "atoms": self.atoms(),
-            "max_atoms": self.max_atoms(),
-            "player": self.player(),
-        })
-        .serialize(serializer)
+        let mut map = serializer.serialize_map(Some(3))?;
+        map.serialize_entry("atoms", &self.atoms())?;
+        map.serialize_entry("max_atoms", &self.max_atoms())?;
+        map.serialize_entry("player", &self.player())?;
+        map.end()
     }
 }

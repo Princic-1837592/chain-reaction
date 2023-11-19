@@ -5,9 +5,7 @@ use std::{
 
 use cell::Cell;
 #[cfg(feature = "serde")]
-use serde::ser::SerializeMap;
-#[cfg(feature = "serde")]
-use serde::Serialize;
+use serde::{ser::SerializeMap, Serialize};
 
 mod cell;
 #[cfg(test)]
@@ -16,7 +14,6 @@ mod tests;
 #[derive(Clone, Debug)]
 pub struct Game {
     board: Vec<Cell>,
-    #[cfg_attr(not(feature = "serde"), allow(dead_code))]
     height: usize,
     width: usize,
     players: Vec<Player>,
@@ -43,8 +40,8 @@ pub enum Error {
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Explosion {
-    result: Vec<Cell>,
-    exploded: HashSet<Coord>,
+    pub result: Vec<Cell>,
+    pub exploded: HashSet<Coord>,
 }
 
 #[derive(Clone, Debug)]
@@ -206,6 +203,14 @@ impl Game {
 
     pub fn get(&self, (row, col): Coord) -> Cell {
         self.board[row * self.width + col]
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
     }
 }
 
