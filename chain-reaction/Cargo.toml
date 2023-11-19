@@ -8,9 +8,11 @@ edition = "2021"
 [dependencies]
 serde = { version = "1.0.189", features = ["derive"], optional = true }
 serde_json = { version = "1.0.107", optional = true }
+deepsize = { version = "0.2.0", optional = true }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
 getrandom = { version = "0.2.7", features = ["js"] }
 
 [features]
 serde = ["dep:serde", "dep:serde_json"]
+deepsize = ["dep:deepsize"]

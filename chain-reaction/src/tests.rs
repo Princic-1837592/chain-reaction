@@ -3,36 +3,28 @@ use std::collections::HashSet;
 use crate::{Cell, Game};
 
 #[test]
-fn max_atoms() {
-    let game = Game::new(3, 3, 4).unwrap();
-    assert_eq!(game.max_atoms, 4 + 8 + 3);
-    let game = Game::new(4, 4, 4).unwrap();
-    assert_eq!(game.max_atoms, 4 + 16 + 12);
-}
-
-#[test]
 fn max_atoms_cell() {
     fn test(height: usize, width: usize) {
         let game = Game::new(height, width, 4).unwrap();
         // prima controlla manualmente gli angoli
-        assert_eq!(game.board[0][0].max_atoms, 2);
-        assert_eq!(game.board[0][width - 1].max_atoms, 2);
-        assert_eq!(game.board[height - 1][0].max_atoms, 2);
-        assert_eq!(game.board[height - 1][width - 1].max_atoms, 2);
+        assert_eq!(game.get((0, 0)).max_atoms(), 2);
+        assert_eq!(game.get((0, width - 1)).max_atoms(), 2);
+        assert_eq!(game.get((height - 1, 0)).max_atoms(), 2);
+        assert_eq!(game.get((height - 1, width - 1)).max_atoms(), 2);
         // poi controlla i bordi orizzontali
         for i in 1..width - 1 {
-            assert_eq!(game.board[0][i].max_atoms, 3);
-            assert_eq!(game.board[height - 1][i].max_atoms, 3);
+            assert_eq!(game.get((0, i)).max_atoms(), 3);
+            assert_eq!(game.get((height - 1, i)).max_atoms(), 3);
         }
         // poi controlla i bordi verticali
         for i in 1..height - 1 {
-            assert_eq!(game.board[i][0].max_atoms, 3);
-            assert_eq!(game.board[i][width - 1].max_atoms, 3);
+            assert_eq!(game.get((i, 0)).max_atoms(), 3);
+            assert_eq!(game.get((i, width - 1)).max_atoms(), 3);
         }
         // infine controlla il centro
         for i in 1..height - 1 {
             for j in 1..width - 1 {
-                assert_eq!(game.board[i][j].max_atoms, 4);
+                assert_eq!(game.get((i, j)).max_atoms(), 4);
             }
         }
     }
@@ -75,14 +67,7 @@ fn add_atom() {
     0 0 0 0 0
     0 0 0 0 0
     */
-    assert_eq!(
-        game.board[0][0],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 2,
-        }
-    );
+    assert_eq!(game.get((0, 0)), Cell::from(1, 0, 2));
     assert_eq!(game.players[0].atoms, 1);
     assert_eq!(game.atoms, 1);
 
@@ -97,14 +82,7 @@ fn add_atom() {
     0 0 0 0 0
     0 0 0 0 1
     */
-    assert_eq!(
-        game.board[4][4],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 2,
-        }
-    );
+    assert_eq!(game.get((4, 4)), Cell::from(1, 1, 2));
     assert_eq!(game.players[1].atoms, 1);
     assert_eq!(game.atoms, 2);
 
@@ -122,30 +100,9 @@ fn add_atom() {
     0 0 0 0 0
     0 0 0 0 1
     */
-    assert_eq!(
-        game.board[0][0],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[0][1],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[1][0],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((0, 0)), Cell::from(0, 0, 2));
+    assert_eq!(game.get((0, 1)), Cell::from(1, 0, 3));
+    assert_eq!(game.get((1, 0)), Cell::from(1, 0, 3));
     assert_eq!(game.players[0].atoms, 2);
     assert_eq!(game.atoms, 3);
 
@@ -160,30 +117,9 @@ fn add_atom() {
     0 0 0 0 1
     0 0 0 1 0
     */
-    assert_eq!(
-        game.board[4][4],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[4][3],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[3][4],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((4, 4)), Cell::from(0, 1, 2));
+    assert_eq!(game.get((4, 3)), Cell::from(1, 1, 3));
+    assert_eq!(game.get((3, 4)), Cell::from(1, 1, 3));
     assert_eq!(game.players[1].atoms, 2);
     assert_eq!(game.atoms, 4);
 
@@ -208,30 +144,9 @@ fn add_atom() {
     0 0 0 0 1
     0 0 0 1 1
     */
-    assert_eq!(
-        game.board[0][0],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[0][1],
-        Cell {
-            atoms: 2,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[1][0],
-        Cell {
-            atoms: 2,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((0, 0)), Cell::from(0, 0, 2));
+    assert_eq!(game.get((0, 1)), Cell::from(2, 0, 3));
+    assert_eq!(game.get((1, 0)), Cell::from(2, 0, 3));
     assert_eq!(game.players[0].atoms, 4);
     assert_eq!(game.atoms, 7);
 
@@ -246,30 +161,9 @@ fn add_atom() {
     0 0 0 0 2
     0 0 0 2 0
     */
-    assert_eq!(
-        game.board[4][4],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[4][3],
-        Cell {
-            atoms: 2,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[3][4],
-        Cell {
-            atoms: 2,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((4, 4)), Cell::from(0, 1, 2));
+    assert_eq!(game.get((4, 3)), Cell::from(2, 1, 3));
+    assert_eq!(game.get((3, 4)), Cell::from(2, 1, 3));
     assert_eq!(game.players[1].atoms, 4);
     assert_eq!(game.atoms, 8);
 
@@ -302,54 +196,12 @@ fn add_atom() {
     0 0 0 0 2
     0 0 0 2 1
     */
-    assert_eq!(
-        game.board[0][0],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[0][1],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[1][0],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[0][2],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[1][1],
-        Cell {
-            atoms: 2,
-            player: 0,
-            max_atoms: 4,
-        }
-    );
-    assert_eq!(
-        game.board[2][0],
-        Cell {
-            atoms: 1,
-            player: 0,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((0, 0)), Cell::from(0, 0, 2));
+    assert_eq!(game.get((0, 1)), Cell::from(1, 0, 3));
+    assert_eq!(game.get((1, 0)), Cell::from(1, 0, 3));
+    assert_eq!(game.get((0, 2)), Cell::from(1, 0, 3));
+    assert_eq!(game.get((1, 1)), Cell::from(2, 0, 4));
+    assert_eq!(game.get((2, 0)), Cell::from(1, 0, 3));
     assert_eq!(game.players[0].atoms, 6);
     assert_eq!(game.atoms, 11);
 
@@ -372,54 +224,12 @@ fn add_atom() {
     0 0 0 2 1
     0 0 1 1 0
     */
-    assert_eq!(
-        game.board[4][4],
-        Cell {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 2,
-        }
-    );
-    assert_eq!(
-        game.board[4][3],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[3][4],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[4][2],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
-    assert_eq!(
-        game.board[3][3],
-        Cell {
-            atoms: 2,
-            player: 1,
-            max_atoms: 4,
-        }
-    );
-    assert_eq!(
-        game.board[2][4],
-        Cell {
-            atoms: 1,
-            player: 1,
-            max_atoms: 3,
-        }
-    );
+    assert_eq!(game.get((4, 4)), Cell::from(0, 1, 2));
+    assert_eq!(game.get((4, 3)), Cell::from(1, 1, 3));
+    assert_eq!(game.get((3, 4)), Cell::from(1, 1, 3));
+    assert_eq!(game.get((4, 2)), Cell::from(1, 1, 3));
+    assert_eq!(game.get((3, 3)), Cell::from(2, 1, 4));
+    assert_eq!(game.get((2, 4)), Cell::from(1, 1, 3));
     assert_eq!(game.players[1].atoms, 6);
     assert_eq!(game.atoms, 12);
 
@@ -512,4 +322,93 @@ fn elimination() {
     assert_eq!(game.turn, 0);
     assert!(game.add_atom((0, 0)).is_err());
     assert_eq!(game.turn, 0);
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn json() {
+    use std::str::FromStr;
+
+    use serde_json::Value;
+
+    let game = Game::new(3, 3, 2).unwrap();
+    assert_eq!(
+        Value::from_str(
+            r#"{
+  "board": [
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}],
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}]
+  ],
+  "height": 3,
+  "width": 3,
+  "players":[{"atoms":0},{"atoms":0}],
+  "turn": 0,
+  "atoms": 0,
+  "won": false
+}"#
+        )
+        .unwrap(),
+        serde_json::to_value(game).unwrap()
+    );
+    let game = Game::small(2);
+    assert_eq!(
+        Value::from_str(
+            r#"{
+  "atoms": 0,
+  "board": [
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":4,"player":0},
+    {"atoms":0,"max_atoms":4,"player":0},{"atoms":0,"max_atoms":3,"player":0}],
+    
+    [{"atoms":0,"max_atoms":2,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":3,"player":0},
+    {"atoms":0,"max_atoms":3,"player":0},{"atoms":0,"max_atoms":2,"player":0}]
+  ],
+  "height": 11,
+  "width": 6,
+  "players":[{"atoms":0},{"atoms":0}],
+  "turn": 0,
+  "won": false
+}"#,
+        )
+        .unwrap(),
+        serde_json::to_value(game).unwrap(),
+    );
 }

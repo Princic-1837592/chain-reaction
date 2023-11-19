@@ -3,61 +3,58 @@ use std::{
     fmt::Display,
 };
 
+use cell::Cell;
+#[cfg(feature = "deepsize")]
+use deepsize::DeepSizeOf;
 #[cfg(feature = "serde")]
-use serde::Serialize;
+use serde::{ser::SerializeMap, Serialize};
 
+mod cell;
 #[cfg(test)]
 mod tests;
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 pub struct Game {
-    board: Vec<Vec<Cell>>,
+    board: Vec<Cell>,
+    height: usize,
+    width: usize,
     players: Vec<Player>,
     num_players: u16,
     turn: usize,
     atoms: u16,
     won: bool,
-    #[cfg_attr(feature = "serde", serde(skip))]
     history: Vec<History>,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
-pub struct Cell {
-    atoms: u8,
-    player: usize,
-    max_atoms: u8,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 struct Player {
     atoms: u16,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub enum Error {
     Occupied,
     GameWon,
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Explosion {
-    result: Vec<Vec<Cell>>,
-    exploded: HashSet<Coord>,
+    pub result: Vec<Cell>,
+    pub exploded: HashSet<Coord>,
 }
 
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "deepsize", derive(DeepSizeOf))]
 struct History {
-    board: Vec<Vec<Cell>>,
+    board: Vec<Cell>,
     players: Vec<Player>,
-    // num_players: u16, // costante
     turn: usize,
     atoms: u16,
-    // won: bool, // impossibile che uno stato precedente sia già vinto
 }
 
 type Coord = (usize, usize);
@@ -68,14 +65,12 @@ impl Game {
         {
             return None;
         }
-        let mut board = vec![vec![Cell::default(); width]; height];
-        for (r, row) in board.iter_mut().enumerate() {
-            for (c, cell) in row.iter_mut().enumerate() {
-                cell.max_atoms = Self::max_atoms((r, c), height, width);
-            }
-        }
         Some(Self {
-            board,
+            board: (0..height)
+                .flat_map(|row| (0..width).map(move |col| Cell::new((row, col), height, width)))
+                .collect(),
+            height,
+            width,
             players: vec![Player::default(); players],
             num_players: players as u16,
             turn: 0,
@@ -91,18 +86,6 @@ impl Game {
 
     pub fn large(players: usize) -> Self {
         Self::new(18, 10, players).unwrap()
-    }
-
-    const fn max_atoms((row, col): Coord, height: usize, width: usize) -> u8 {
-        let is_horizontal_edge = row == 0 || row == height - 1;
-        let is_vertical_edge = col == 0 || col == width - 1;
-        if is_horizontal_edge && is_vertical_edge {
-            2
-        } else if is_horizontal_edge || is_vertical_edge {
-            3
-        } else {
-            4
-        }
     }
 
     fn next_turn(&mut self) {
@@ -121,13 +104,14 @@ impl Game {
         }
     }
 
-    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Result<Vec<Explosion>, Error> {
+    pub fn add_atom(&mut self, (row, col): Coord) -> Result<Vec<Explosion>, Error> {
         if self.won {
             return Err(Error::GameWon);
         }
-        let cell = self.board[row][col];
+        let index = row * self.width + col;
+        let cell = self.board[index];
         // se la cella è già occupata
-        if cell.atoms != 0 && cell.player != self.turn {
+        if cell.atoms() != 0 && cell.player() != self.turn {
             return Err(Error::Occupied);
         }
         self.history.push(History {
@@ -136,13 +120,13 @@ impl Game {
             turn: self.turn,
             atoms: self.atoms,
         });
-        let cell = &mut self.board[row][col];
-        cell.player = self.turn;
-        cell.atoms += 1;
+        let cell = &mut self.board[index];
+        cell.set_player(self.turn);
+        cell.add_atom();
         self.atoms += 1;
         self.players[self.turn].atoms += 1;
         let result = if cell.must_explode() {
-            self.explode(coord)
+            self.explode(index)
         } else {
             vec![]
         };
@@ -150,46 +134,51 @@ impl Game {
         Ok(result)
     }
 
-    fn explode(&mut self, coord @ (row, col): Coord) -> Vec<Explosion> {
+    fn explode(&mut self, index: usize) -> Vec<Explosion> {
         let mut result = vec![];
-        if !self.board[row][col].must_explode() {
+        if !self.board[index].must_explode() {
             return result;
         }
-        let mut exploded = vec![vec![false; self.board[0].len()]; self.board.len()];
-        let mut exploded_count_down = self.board.len() * self.board[0].len();
-        let mut to_explode = VecDeque::from([coord]);
+        let mut exploded = vec![false; self.board.len()];
+        let mut exploded_count_down = self.board.len();
+        let mut to_explode = VecDeque::from([index]);
         while !to_explode.is_empty() && exploded_count_down > 0 {
             let mut round = HashSet::new();
             for _ in 0..to_explode.len() {
-                let coord @ (row, col) = to_explode.pop_front().unwrap();
-                let cell = &mut self.board[row][col];
-                // se la cella ha subito più di un'esplosione nello stesso round
+                let index = to_explode.pop_front().unwrap();
+                let cell = &mut self.board[index];
+                // se la cella ha ricevuto più di un'esplosione nello stesso round
                 if !cell.must_explode() {
                     continue;
                 }
-                round.insert(coord);
-                if !exploded[row][col] {
-                    exploded[row][col] = true;
+                round.insert((index / self.width, index % self.width));
+                if !exploded[index] {
+                    exploded[index] = true;
                     exploded_count_down -= 1;
                 }
-                cell.atoms -= cell.max_atoms;
-                if cell.atoms == 0 {
-                    cell.player = usize::MAX;
-                }
-                for next @ (next_row, next_col) in [
-                    (row.wrapping_sub(1), col),
-                    (row + 1, col),
-                    (row, col.wrapping_sub(1)),
-                    (row, col + 1),
+                cell.explode();
+                for next in [
+                    index.wrapping_sub(self.width),
+                    index + self.width,
+                    if index % self.width == 0 {
+                        usize::MAX
+                    } else {
+                        index - 1
+                    },
+                    if index % self.width == self.width - 1 {
+                        usize::MAX
+                    } else {
+                        index + 1
+                    },
                 ] {
-                    if next_row < self.board.len() && next_col < self.board[0].len() {
-                        let next_cell = &mut self.board[next_row][next_col];
-                        if next_cell.atoms != 0 && next_cell.player != self.turn {
-                            self.players[next_cell.player].atoms -= next_cell.atoms as u16;
-                            self.players[self.turn].atoms += next_cell.atoms as u16;
+                    if next < self.board.len() {
+                        let next_cell = &mut self.board[next];
+                        if next_cell.atoms() != 0 && next_cell.player() != self.turn {
+                            self.players[next_cell.player()].atoms -= next_cell.atoms() as u16;
+                            self.players[self.turn].atoms += next_cell.atoms() as u16;
                         }
-                        next_cell.player = self.turn;
-                        next_cell.atoms += 1;
+                        next_cell.set_player(self.turn);
+                        next_cell.add_atom();
                         if next_cell.must_explode() {
                             to_explode.push_back(next);
                         }
@@ -216,16 +205,22 @@ impl Game {
             false
         }
     }
-}
 
-impl Cell {
-    const fn must_explode(&self) -> bool {
-        self.atoms >= self.max_atoms
+    pub fn get(&self, (row, col): Coord) -> Cell {
+        self.board[row * self.width + col]
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
     }
 }
 
 impl Explosion {
-    fn new(result: Vec<Vec<Cell>>, exploded: HashSet<Coord>) -> Self {
+    fn new(result: Vec<Cell>, exploded: HashSet<Coord>) -> Self {
         Self { result, exploded }
     }
 }
@@ -236,27 +231,43 @@ impl Default for Game {
     }
 }
 
-impl Default for Cell {
-    fn default() -> Self {
-        Self {
-            atoms: 0,
-            player: usize::MAX,
-            max_atoms: 0,
-        }
-    }
-}
-
 impl Display for Game {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut result = String::new();
-        for row in &self.board {
-            for cell in row {
-                result.push_str(&format!("{} ", cell.atoms));
+        for (i, cell) in self.board.iter().enumerate() {
+            result.push_str(&format!("{} ", cell.atoms()));
+            if i % self.width == self.width - 1 {
+                result.pop();
+                result.push('\n');
             }
-            result.pop();
-            result.push('\n');
         }
         result.pop();
         write!(f, "{}", result)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Game {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut game = serializer.serialize_map(Some(7))?;
+        game.serialize_entry("height", &self.height)?;
+        game.serialize_entry("width", &self.width)?;
+        game.serialize_entry("players", &self.players)?;
+        game.serialize_entry("turn", &self.turn)?;
+        game.serialize_entry("atoms", &self.atoms)?;
+        game.serialize_entry("won", &self.won)?;
+        game.serialize_entry(
+            "board",
+            &(0..self.height)
+                .map(|row| {
+                    (0..self.width)
+                        .map(|col| {
+                            serde_json::to_value(self.board[row * self.width + col]).unwrap()
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>(),
+        )?;
+        game.end()
     }
 }
