@@ -51,10 +51,8 @@ pub struct Explosion {
 struct History {
     board: Vec<Cell>,
     players: Vec<Player>,
-    // num_players: u16, // costante
     turn: usize,
     atoms: u16,
-    // won: bool, // impossibile che uno stato precedente sia già vinto
 }
 
 type Coord = (usize, usize);
@@ -104,7 +102,7 @@ impl Game {
         }
     }
 
-    pub fn add_atom(&mut self, coord @ (row, col): Coord) -> Result<Vec<Explosion>, Error> {
+    pub fn add_atom(&mut self, (row, col): Coord) -> Result<Vec<Explosion>, Error> {
         if self.won {
             return Err(Error::GameWon);
         }
@@ -126,7 +124,7 @@ impl Game {
         self.atoms += 1;
         self.players[self.turn].atoms += 1;
         let result = if cell.must_explode() {
-            self.explode(coord)
+            self.explode(index)
         } else {
             vec![]
         };
@@ -134,9 +132,8 @@ impl Game {
         Ok(result)
     }
 
-    fn explode(&mut self, (row, col): Coord) -> Vec<Explosion> {
+    fn explode(&mut self, index: usize) -> Vec<Explosion> {
         let mut result = vec![];
-        let index = row * self.width + col;
         if !self.board[index].must_explode() {
             return result;
         }
@@ -148,7 +145,7 @@ impl Game {
             for _ in 0..to_explode.len() {
                 let index = to_explode.pop_front().unwrap();
                 let cell = &mut self.board[index];
-                // se la cella ha subito più di un'esplosione nello stesso round
+                // se la cella ha ricevuto più di un'esplosione nello stesso round
                 if !cell.must_explode() {
                     continue;
                 }
